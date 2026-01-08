@@ -1,717 +1,89 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <title>DIGIY LOC — Locations sans OTA</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="DIGIY LOC — Locations de villas, appartements, maisons d'hôtes sans OTA, sans commission. Contact direct propriétaire.">
+<meta charset="utf-8">
+<title>DIGIY LOC — Locations sans commission</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Locations direct propriétaire. Zéro commission. DIGIY LOC.">
 
-  <style>
-    :root{
-      --bg:#020617;
-      --bg-soft:#020818;
-      --card:#030712;
-      --accent:#facc15;        /* Or DIGIY */
-      --accent-soft:#f97316;   /* Or chaud */
-      --accent-green:#22c55e;  /* Vert DIGIY */
-      --ink:#f9fafb;
-      --muted:#cbd5f5;
-      --line:#1f2937;
-      --shadow-soft:0 20px 45px rgba(15,23,42,0.9);
-    }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    *{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
-    }
-
-    body{
-      min-height:100vh;
-      background:
-        radial-gradient(circle at top,rgba(34,197,94,0.16),transparent 60%),
-        radial-gradient(circle at bottom,rgba(250,204,21,0.16),transparent 55%),
-        #020617;
-      color:var(--ink);
-      display:flex;
-      justify-content:center;
-      padding:10px;
-      font-size:16px;
-    }
-
-    .app{
-      width:100%;
-      max-width:1100px;
-      min-height:100vh;
-      background:linear-gradient(135deg,#020617 0%,#020818 50%,#020617 100%);
-      border-radius:24px;
-      border:1px solid rgba(148,163,184,0.25);
-      box-shadow:var(--shadow-soft);
-      padding:16px 16px 22px;
-      display:flex;
-      flex-direction:column;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .app::before{
-      content:"";
-      position:absolute;
-      inset:-40%;
-      background:
-        radial-gradient(circle at 0% 0%,rgba(34,197,94,0.14),transparent 55%),
-        radial-gradient(circle at 100% 100%,rgba(250,204,21,0.14),transparent 45%);
-      opacity:0.8;
-      pointer-events:none;
-    }
-
-    header{
-      position:relative;
-      z-index:2;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin-bottom:12px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .brand-logo{
-      width:42px;
-      height:42px;
-      border-radius:14px;
-      background:radial-gradient(circle at 30% 0%,#22c55e,#15803d);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:24px;
-      box-shadow:0 12px 30px rgba(34,197,94,0.65);
-    }
-
-    .brand-text-title{
-      font-size:20px;
-      font-weight:900;
-      letter-spacing:0.09em;
-      text-transform:uppercase;
-      color:var(--accent-green);
-    }
-
-    .brand-text-sub{
-      font-size:14px;
-      color:var(--muted);
-      font-weight:600;
-    }
-
-    .back-link{
-      font-size:13px;
-      color:var(--muted);
-      text-decoration:none;
-      background:rgba(15,23,42,0.9);
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,0.6);
-      padding:8px 14px;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      z-index:2;
-      position:relative;
-      font-weight:700;
-    }
-
-    .back-link span{
-      font-size:15px;
-    }
-
-    main{
-      position:relative;
-      z-index:2;
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
-
-    /* HERO */
-    .hero{
-      background:radial-gradient(circle at top left,rgba(34,197,94,0.18),rgba(3,7,18,0.96));
-      border-radius:22px;
-      border:1px solid rgba(148,163,184,0.6);
-      padding:16px 16px 16px;
-      box-shadow:0 18px 44px rgba(15,23,42,0.95);
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-
-    .hero-title{
-      font-size:26px;
-      font-weight:900;
-      color:var(--accent);
-    }
-
-    .hero-title span{
-      color:var(--accent-green);
-    }
-
-    .hero-sub{
-      font-size:16px;
-      color:#e5e7eb;
-      max-width:700px;
-      font-weight:500;
-      line-height:1.6;
-    }
-
-    .hero-sub strong{
-      font-weight:800;
-      color:var(--accent-green);
-    }
-
-    .hero-tags{
-      display:flex;
-      flex-wrap:wrap;
-      gap:7px;
-      margin-top:4px;
-    }
-
-    .hero-tag{
-      font-size:13px;
-      padding:5px 11px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,0.7);
-      background:rgba(15,23,42,0.95);
-      color:#e5e7eb;
-      font-weight:600;
-    }
-
-    .hero-tag strong{
-      color:var(--accent-green);
-      font-weight:800;
-    }
-
-    /* CTA HERO INSCRIPTION PRO */
-    .hero-cta{
-      margin-top:10px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-
-    /* GRID LOCATIONS */
-    .grid{
-      margin-top:14px;
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:14px;
-    }
-
-    @media(max-width:900px){
-      .grid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-      }
-    }
-
-    @media(max-width:640px){
-      .app{
-        border-radius:0;
-        border:none;
-        box-shadow:none;
-      }
-      .grid{
-        grid-template-columns:1fr;
-        gap:20px;
-      }
-    }
-
-    .loc-card{
-      background:radial-gradient(circle at top,rgba(15,23,42,0.98),#020617);
-      border-radius:24px;
-      border:1px solid rgba(148,163,184,0.7);
-      padding:12px 12px 14px;
-      box-shadow:0 14px 34px rgba(15,23,42,0.95);
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .loc-card::before{
-      content:"";
-      position:absolute;
-      inset:-40%;
-      background:radial-gradient(circle at top,rgba(34,197,94,0.08),transparent 55%);
-      opacity:0.8;
-      pointer-events:none;
-    }
-
-    .loc-head{
-      position:relative;
-      z-index:2;
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:8px;
-    }
-
-    .loc-name{
-      font-size:20px;
-      font-weight:900;
-      color:var(--accent-green);
-    }
-
-    .loc-city{
-      font-size:14px;
-      color:#facc15;
-      font-weight:600;
-    }
-
-    .loc-badge{
-      font-size:12px;
-      padding:5px 9px;
-      border-radius:999px;
-      border:1px solid rgba(250,204,21,0.9);
-      color:var(--accent);
-      background:rgba(15,23,42,0.98);
-      white-space:nowrap;
-      font-weight:700;
-    }
-
-    .loc-body{
-      position:relative;
-      z-index:2;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-
-    .loc-photo{
-      margin-top:0;
-      border-radius:16px;
-      overflow:hidden;
-      max-height:220px;
-      height:220px;
-      border:2px solid rgba(250,204,21,0.85);
-    }
-
-    .loc-photo img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      object-position:center 60%;
-      display:block;
-    }
-
-    .loc-desc{
-      font-size:15px;
-      color:#f3f4f6;
-      font-weight:500;
-      line-height:1.6;
-    }
-
-    .loc-meta{
-      font-size:13px;
-      color:#e5e7eb;
-      font-weight:500;
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-    }
-
-    .loc-tag{
-      padding:3px 8px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,0.8);
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    .loc-price{
-      font-size:14px;
-      color:var(--accent-soft);
-      font-weight:700;
-      margin-top:2px;
-    }
-
-    .loc-actions{
-      margin-top:8px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
-      font-size:11px;
-      color:var(--muted);
-    }
-
-    .btn{
-      border:none;
-      border-radius:999px;
-      padding:9px 13px;
-      font-size:14px;
-      font-weight:900;
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      text-decoration:none;
-      white-space:nowrap;
-      transition:all 0.25s;
-      flex-grow:1;
-      justify-content:center;
-    }
-
-    .btn-main{
-      background:linear-gradient(135deg,#facc15,#f97316);
-      color:#111827;
-      box-shadow:0 7px 18px rgba(250,204,21,0.55);
-    }
-
-    .btn-main:hover{
-      transform:translateY(-1px);
-      box-shadow:0 11px 26px rgba(250,204,21,0.7);
-    }
-
-    .btn-wa{
-      background:rgba(22,163,74,0.2);
-      color:#bbf7d0;
-      border:1px solid rgba(34,197,94,0.85);
-    }
-
-    .btn-wa:hover{
-      border-color:#22c55e;
-    }
-
-    footer{
-      position:relative;
-      z-index:2;
-      margin-top:16px;
-      font-size:12px;
-      color:var(--muted);
-      display:flex;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      gap:6px;
-      font-weight:600;
-      line-height:1.4;
-    }
-
-    footer span{
-      color:var(--accent);
-      font-weight:800;
-    }
-  </style>
+<style>
+body{
+  margin:0;
+  font-family:system-ui,Segoe UI,Roboto,sans-serif;
+  background:#020617;
+  color:#f9fafb;
+}
+header{
+  padding:24px;
+  text-align:center;
+}
+h1{font-size:2rem;margin:0}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:16px;
+  padding:16px;
+}
+.card{
+  background:#030712;
+  border-radius:16px;
+  padding:14px;
+}
+.card h3{margin:0 0 6px}
+.price{color:#facc15;font-weight:700}
+a.btn{
+  display:block;
+  margin-top:10px;
+  text-align:center;
+  padding:10px;
+  border-radius:12px;
+  background:#16a34a;
+  color:#022c22;
+  text-decoration:none;
+  font-weight:700;
+}
+</style>
 </head>
+
 <body>
-<div class="app">
-  <header>
-    <div class="brand">
-      <div class="brand-logo">🏠</div>
-      <div>
-        <div class="brand-text-title">DIGIY LOC</div>
-        <div class="brand-text-sub">Locations sans OTA • 0% commission</div>
-      </div>
-    </div>
 
-    <a href="https://digiylyfe.com/accueil-digiy/" class="back-link">
-      <span>←</span> Retour DIGIY HUB
-    </a>
-  </header>
+<header>
+  <h1>🏡 DIGIY LOC</h1>
+  <p>Locations direct propriétaire — 0% commission</p>
+</header>
 
-  <main>
-    <section class="hero">
-      <div class="hero-title">
-        Locations chez nos <span>Partenaires DIGIY LOC</span>
-      </div>
-      <div class="hero-sub">
-        Villas, appartements, maisons d'hôtes et résidences gérées en direct avec le propriétaire.
-        <strong>Sans OTA, sans commission</strong>, contact humain et paiement direct.
-      </div>
-      <div class="hero-tags">
-        <div class="hero-tag"><strong>0% Commission</strong></div>
-        <div class="hero-tag">Contact direct propriétaire</div>
-        <div class="hero-tag">WhatsApp & Appel</div>
-        <div class="hero-tag">Sénégal → Afrique</div>
-      </div>
-
-      <div class="hero-cta">
-        <a href="https://beauville.github.io/inscription-digiy/" class="btn btn-main" target="_blank" rel="noopener">
-          Devenir partenaire DIGIY LOC
-        </a>
-      </div>
-    </section>
-
-    <section class="grid">
-
-      <!-- CHEZ BAPTISTE — AVEC VRAIE PHOTO -->
-      <article class="loc-card">
-        <div class="loc-head">
-          <div>
-            <div class="loc-name">CHEZ BAPTISTE</div>
-            <div class="loc-city">Appartement • Saly</div>
-          </div>
-          <div class="loc-badge">Partenaire Fondateur</div>
-        </div>
-
-        <div class="loc-body">
-          <div class="loc-photo">
-            <img src="https://digiylyfe.com/wp-content/uploads/2025/06/042-BAPTISTE.png"
-                 alt="Appartement Chez Baptiste à Saly">
-          </div>
-          <p class="loc-desc">
-            Appartement confortable, décor chaleureux, idéal pour séjours à Saly. Propriétaire disponible,
-            accueil humain, proximité plage et commodités.
-          </p>
-          <div class="loc-meta">
-            <span class="loc-tag">2–4 personnes</span>
-            <span class="loc-tag">Saly • Petite Côte</span>
-            <span class="loc-tag">Wi-Fi • Climatisation</span>
-          </div>
-          <div class="loc-price">
-            À partir de 30 000 F / nuit • Tarif confirmé en direct avec le propriétaire.
-          </div>
-          <div class="loc-actions">
-            <a class="btn btn-main"
-               href="https://beauville.github.io/chez-baptiste-digiy-loc/"
-               target="_blank" rel="noopener">
-              Voir la fiche complète
-            </a>
-            <button class="btn btn-wa" type="button"
-                    onclick="openWa('+221771342889','Bonjour, je souhaite des informations sur CHEZ BAPTISTE via DIGIY LOC.');">
-              💬 WhatsApp
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <!-- VILLA BAOBAB -->
-      <article class="loc-card">
-        <div class="loc-head">
-          <div>
-            <div class="loc-name">Villa Baobab</div>
-            <div class="loc-city">Villa • Ngaparou</div>
-          </div>
-          <div class="loc-badge">Piscine privée</div>
-        </div>
-
-        <div class="loc-body">
-          <div class="loc-photo">
-            <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=900&q=80"
-                 alt="Villa avec piscine au Sénégal">
-          </div>
-          <p class="loc-desc">
-            Grande villa avec piscine, jardin arboré, idéale pour familles et groupes.
-            Quartier calme, à quelques minutes de la plage.
-          </p>
-          <div class="loc-meta">
-            <span class="loc-tag">6–10 personnes</span>
-            <span class="loc-tag">Ngaparou</span>
-            <span class="loc-tag">Piscine • Parking privé</span>
-          </div>
-          <div class="loc-price">
-            Fourchette : 80 000 F – 150 000 F / nuit • À confirmer avec le propriétaire.
-          </div>
-          <div class="loc-actions">
-            <a class="btn btn-main"
-               href="#"
-               onclick="alert('Fiche Villa Baobab en préparation dans DIGIY LOC.'); return false;">
-              Bientôt sur DIGIY LOC
-            </a>
-            <button class="btn btn-wa" type="button"
-                    onclick="openWa('+221770001122','Bonjour, je souhaite réserver la Villa Baobab via DIGIY LOC.');">
-              💬 WhatsApp
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <!-- MAISON DES DUNES -->
-      <article class="loc-card">
-        <div class="loc-head">
-          <div>
-            <div class="loc-name">Maison des Dunes</div>
-            <div class="loc-city">Maison d'hôtes • Lompoul</div>
-          </div>
-          <div class="loc-badge">Expérience désert</div>
-        </div>
-
-        <div class="loc-body">
-          <div class="loc-photo">
-            <img src="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=900&q=80"
-                 alt="Maison au milieu des dunes">
-          </div>
-          <p class="loc-desc">
-            Chambres confortables entre dunes et ciel étoilé. Idéale pour déconnexion totale,
-            excursions et soirées autour du feu.
-          </p>
-          <div class="loc-meta">
-            <span class="loc-tag">2–3 personnes / chambre</span>
-            <span class="loc-tag">Lac / Désert</span>
-            <span class="loc-tag">Demi-pension possible</span>
-          </div>
-          <div class="loc-price">
-            À partir de 30 000 F / nuit • Tarifs selon période et formule (repas / activités).
-          </div>
-          <div class="loc-actions">
-            <a class="btn btn-main"
-               href="#"
-               onclick="alert('Fiche Maison des Dunes en préparation dans DIGIY LOC.'); return false;">
-              Bientôt sur DIGIY LOC
-            </a>
-            <button class="btn btn-wa" type="button"
-                    onclick="openWa('+221773334455','Bonjour, je souhaite des infos sur la Maison des Dunes via DIGIY LOC.');">
-              💬 WhatsApp
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <!-- RÉSIDENCE ATLANTIQUE -->
-      <article class="loc-card">
-        <div class="loc-head">
-          <div>
-            <div class="loc-name">Résidence Atlantique</div>
-            <div class="loc-city">Studios & Apparts • Dakar</div>
-          </div>
-          <div class="loc-badge">Business & long séjour</div>
-        </div>
-
-        <div class="loc-body">
-          <div class="loc-photo">
-            <img src="https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&w=900&q=80"
-                 alt="Appartement moderne à Dakar">
-          </div>
-          <p class="loc-desc">
-            Résidence moderne pour missions professionnelles et longs séjours.
-            Studios et appartements équipés, bien connectés à la ville.
-          </p>
-          <div class="loc-meta">
-            <span class="loc-tag">1–4 personnes</span>
-            <span class="loc-tag">Dakar</span>
-            <span class="loc-tag">Wi-Fi • Sécurité 24/7</span>
-          </div>
-          <div class="loc-price">
-            Mensuel / hebdo sur demande • Conditions négociables en direct.
-          </div>
-          <div class="loc-actions">
-            <a class="btn btn-main"
-               href="#"
-               onclick="alert('Fiche Résidence Atlantique en préparation dans DIGIY LOC.'); return false;">
-              Bientôt sur DIGIY LOC
-            </a>
-            <button class="btn btn-wa" type="button"
-                    onclick="openWa('+221776667788','Bonjour, je souhaite un devis Résidence Atlantique via DIGIY LOC.');">
-              💬 WhatsApp
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <!-- LODGE BAOBAB SAUVAGE -->
-      <article class="loc-card">
-        <div class="loc-head">
-          <div>
-            <div class="loc-name">Lodge Baobab Sauvage</div>
-            <div class="loc-city">Écolodge • Casamance</div>
-          </div>
-          <div class="loc-badge">Nature & authenticité</div>
-        </div>
-
-        <div class="loc-body">
-          <div class="loc-photo">
-            <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80"
-                 alt="Lodge en pleine nature">
-          </div>
-          <p class="loc-desc">
-            Huttes et bungalows intégrés à la nature. Idéal pour recharger les batteries,
-            découvrir la Casamance et ses bolongs.
-          </p>
-          <div class="loc-meta">
-            <span class="loc-tag">2–5 personnes</span>
-            <span class="loc-tag">Casamance</span>
-            <span class="loc-tag">Éco-tourisme</span>
-          </div>
-          <div class="loc-price">
-            Tarifs selon saison • Contact en direct pour offres sur mesure.
-          </div>
-          <div class="loc-actions">
-            <a class="btn btn-main"
-               href="#"
-               onclick="alert('Fiche Lodge Baobab Sauvage en préparation dans DIGIY LOC.'); return false;">
-              Bientôt sur DIGIY LOC
-            </a>
-            <button class="btn btn-wa" type="button"
-                    onclick="openWa('+221778889900','Bonjour, je souhaite découvrir le Lodge Baobab Sauvage via DIGIY LOC.');">
-              💬 WhatsApp
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <!-- FUTUR PARTENAIRE -->
-      <article class="loc-card">
-        <div class="loc-head">
-          <div>
-            <div class="loc-name">Votre hébergement ici</div>
-            <div class="loc-city">Prochain partenaire DIGIY LOC</div>
-          </div>
-          <div class="loc-badge">Rejoindre DIGIY</div>
-        </div>
-
-        <div class="loc-body">
-          <div class="loc-photo">
-            <img src="https://images.unsplash.com/photo-1512914890250-353c97c9e7e2?auto=format&fit=crop&w=900&q=80"
-                 alt="Hébergement futur partenaire DIGIY LOC">
-          </div>
-          <p class="loc-desc">
-            Vous êtes propriétaire ou gérant d'un hébergement ?  
-            DIGIY LOC vous donne une vitrine propre, humaine et sans commission, sous votre nom.
-          </p>
-          <div class="loc-meta">
-            <span class="loc-tag">Propriétaires & gérants</span>
-            <span class="loc-tag">0% commission</span>
-            <span class="loc-tag">Paiement direct</span>
-          </div>
-          <div class="loc-price">
-            Positionnement DIGIY LOC • Pack visibilité, accompagnement et outils digitaux.
-          </div>
-          <div class="loc-actions">
-            <a class="btn btn-main"
-               href="https://beauville.github.io/inscription-digiy/"
-               target="_blank" rel="noopener">
-              Devenir partenaire DIGIY LOC
-            </a>
-            <button class="btn btn-wa" type="button"
-                    onclick="openWa('+221771342889','Bonjour, je veux devenir partenaire DIGIY LOC.');">
-              💬 WhatsApp
-            </button>
-          </div>
-        </div>
-      </article>
-
-    </section>
-  </main>
-
-  <footer>
-    <div>DIGIY LOC • <span>Super App DIGIYLYFE</span> — Sénégal → Afrique</div>
-    <div>Locations simples, humaines, souveraines • Galerie évolutive.</div>
-  </footer>
-</div>
+<div class="grid" id="listings"></div>
 
 <script>
-  function openWa(phone, message){
-    const txt = encodeURIComponent(message || "");
-    const clean = phone.replace(/\s+/g,"");
-    window.open(
-      "https://wa.me/" + clean.replace("+","") + (txt ? ("?text=" + txt) : ""),
-      "_blank"
-    );
-  }
+const SB = supabase.createClient(
+  "https://wesqmwjjtsefyjnluosj.supabase.co",
+  "TON_ANON_KEY_ICI"
+);
+
+(async()=>{
+  const { data, error } = await SB
+    .from("loc_listings")
+    .select("id,title,city,price_per_night")
+    .eq("is_active", true);
+
+  if(error){ console.error(error); return; }
+
+  const box = document.getElementById("listings");
+  data.forEach(l=>{
+    const d = document.createElement("div");
+    d.className="card";
+    d.innerHTML=`
+      <h3>${l.title}</h3>
+      <div>${l.city}</div>
+      <div class="price">${l.price_per_night} FCFA / nuit</div>
+      <a class="btn" href="loc.html?id=${l.id}">Voir le logement</a>
+    `;
+    box.appendChild(d);
+  });
+})();
 </script>
+
 </body>
 </html>
