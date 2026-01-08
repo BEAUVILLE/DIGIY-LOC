@@ -2,68 +2,444 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>DIGIY LOC — Logement</title>
+<title>DIGIY LOC — Fiche logement</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="loc-guard.js" defer></script>
 
 <style>
+:root{
+  --bg:#020617;
+  --card:#0b1220;
+  --line:#1f2937;
+  --ink:#f9fafb;
+  --muted:#cbd5f5;
+  --gold:#facc15;
+  --green:#22c55e;
+  --soft:rgba(255,255,255,.04);
+}
+*{box-sizing:border-box}
 body{
   margin:0;
-  padding:20px;
-  font-family:system-ui;
-  background:#020617;
-  color:#f9fafb;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(900px 520px at 15% -10%, rgba(250,204,21,.14), transparent 60%),
+    radial-gradient(900px 520px at 90% 0%, rgba(34,197,94,.12), transparent 60%),
+    var(--bg);
 }
-h1{margin-top:0}
-.price{color:#facc15;font-size:1.4rem;font-weight:800}
-button{
-  margin-top:16px;
-  padding:14px;
+.wrap{max-width:980px;margin:0 auto;padding:14px}
+.topbar{
+  display:flex;gap:10px;align-items:center;justify-content:space-between;
+  margin:6px 0 14px;
+}
+.back{
+  display:inline-flex;gap:8px;align-items:center;
+  padding:10px 12px;border-radius:12px;
+  background:var(--soft);border:1px solid var(--line);
+  color:var(--muted);text-decoration:none;font-weight:800;
+}
+.badge{
+  border:1px solid rgba(250,204,21,.35);
+  background:rgba(250,204,21,.12);
+  color:#fde68a;
+  padding:8px 12px;border-radius:999px;
+  font-weight:950;font-size:.9rem;
+}
+.hero{
+  border:1px solid var(--line);
+  border-radius:20px;
+  overflow:hidden;
+  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+}
+.cover{
   width:100%;
-  border-radius:14px;
-  border:0;
-  background:#22c55e;
+  height:320px;
+  object-fit:cover;
+  display:block;
+  background:rgba(255,255,255,.06);
+}
+.content{padding:14px}
+h1{margin:0 0 6px;font-size:1.8rem;letter-spacing:.2px}
+.meta{color:var(--muted);font-weight:700}
+.priceRow{
+  display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;
+  margin-top:10px;
+}
+.price{
+  color:var(--gold);
+  font-weight:950;
+  font-size:1.25rem;
+}
+.small{color:var(--muted);font-weight:700}
+.grid2{
+  display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-top:14px;
+}
+@media (max-width: 860px){ .grid2{grid-template-columns:1fr} }
+
+.card{
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+  border-radius:18px;
+  padding:14px;
+}
+.card h2{margin:0 0 10px;font-size:1.15rem}
+.desc{color:rgba(203,213,245,.95);line-height:1.45}
+.kpis{display:flex;gap:10px;flex-wrap:wrap}
+.kpi{
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+  border-radius:999px;
+  padding:8px 10px;
+  color:var(--muted);
   font-weight:800;
-  font-size:1.1rem;
+  font-size:.92rem;
+}
+.gallery{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:10px;
+}
+@media (max-width: 700px){ .gallery{grid-template-columns:repeat(2, 1fr)} }
+.gimg{
+  width:100%;
+  height:120px;
+  object-fit:cover;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.06);
+  cursor:pointer;
+}
+.videoWrap{
+  position:relative;
+  padding-top:56.25%;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+}
+.videoWrap iframe{
+  position:absolute;inset:0;width:100%;height:100%;border:0;
+}
+.actions{
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;
+}
+.btn{
+  border:0;border-radius:14px;
+  padding:13px 14px;
+  font-weight:950;
+  cursor:pointer;
+}
+.btnPrimary{background:var(--green);color:#022c22}
+.btnGhost{
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--line);
+  color:var(--muted);
+}
+.owner{
+  display:flex;gap:12px;align-items:center;
+}
+.avatar{
+  width:46px;height:46px;border-radius:14px;
+  display:grid;place-items:center;
+  border:1px solid var(--line);
+  background:rgba(250,204,21,.12);
+  color:#fde68a;
+  font-weight:950;
+}
+.ownerName{font-weight:950}
+.note{
+  margin-top:10px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  color:var(--muted);
+  background:rgba(255,255,255,.03);
+  display:none;
+  white-space:pre-wrap;
+}
+.lightbox{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;
+  align-items:center;justify-content:center;
+  padding:16px;
+}
+.lightbox img{
+  max-width:95vw;
+  max-height:85vh;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.18);
 }
 </style>
 </head>
 
 <body>
+<div class="wrap">
 
-<h1 id="title">...</h1>
-<div id="city"></div>
-<div class="price" id="price"></div>
+  <div class="topbar">
+    <a class="back" href="index.html">← Retour</a>
+    <div class="badge">Contact direct • 0% commission</div>
+  </div>
 
-<button onclick="contactPro()">📞 Contacter le propriétaire</button>
+  <div class="hero">
+    <img id="cover" class="cover" alt="Logement">
+    <div class="content">
+      <h1 id="nom">Chargement…</h1>
+      <div class="meta" id="meta"></div>
+
+      <div class="priceRow">
+        <div class="price" id="prix"></div>
+        <div class="small" id="pricesPlus"></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btnPrimary" id="btnContact">📞 Contacter le propriétaire</button>
+        <button class="btn btnGhost" id="btnShare">🔗 Partager</button>
+        <button class="btn btnGhost" id="btnMap">📍 Ouvrir la carte</button>
+      </div>
+
+      <div class="note" id="note"></div>
+    </div>
+  </div>
+
+  <div class="grid2">
+
+    <div class="card">
+      <h2>✨ Présentation</h2>
+      <div class="desc" id="desc">—</div>
+
+      <div style="height:12px"></div>
+
+      <div class="kpis" id="kpis"></div>
+
+      <div style="height:14px"></div>
+
+      <h2>📸 Galerie</h2>
+      <div class="gallery" id="gallery"></div>
+
+      <div style="height:14px"></div>
+
+      <div id="videoBlock" style="display:none">
+        <h2>🎥 Vidéo</h2>
+        <div class="videoWrap">
+          <iframe id="video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>👤 Propriétaire</h2>
+      <div class="owner">
+        <div class="avatar" id="avatar">D</div>
+        <div>
+          <div class="ownerName" id="ownerName">Propriétaire DIGIY</div>
+          <div class="small" id="ownerHint">Réponse rapide si disponible</div>
+        </div>
+      </div>
+
+      <div style="height:14px"></div>
+
+      <h2>💰 Conditions</h2>
+      <div class="desc" id="fees">—</div>
+
+      <div style="height:14px"></div>
+
+      <h2>🛡️ Transparence</h2>
+      <div class="desc">
+        DIGIY LOC ne prend pas de commission. Tu échanges directement avec le propriétaire.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- lightbox simple -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lbImg" alt="Photo">
+</div>
 
 <script>
-const SB = supabase.createClient(
-  "https://wesqmwjjtsefyjnluosj.supabase.co",
-  "TON_ANON_KEY_ICI"
-);
+const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+const SUPABASE_ANON_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const id = new URLSearchParams(location.search).get("id");
+const note = document.getElementById("note");
 
-let LOC = null;
+let LOG = null;
+
+function showNote(t){
+  note.style.display = "block";
+  note.textContent = t;
+}
+function esc(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+function money(n){
+  return Number(n||0).toLocaleString("fr-FR") + " FCFA";
+}
+function initials(name){
+  const t = String(name||"").trim().split(/\s+/).filter(Boolean);
+  if(!t.length) return "D";
+  return (t[0][0] + (t[1]?.[0]||"")).toUpperCase();
+}
+function parsePhotos(v){
+  // photos_urls est jsonb : peut être array, ou {urls:[]}, ou string
+  if(!v) return [];
+  if(Array.isArray(v)) return v.filter(Boolean);
+  if(typeof v === "string"){
+    try { const j = JSON.parse(v); return parsePhotos(j); } catch { return [v]; }
+  }
+  if(typeof v === "object"){
+    if(Array.isArray(v.urls)) return v.urls.filter(Boolean);
+    if(Array.isArray(v.photos)) return v.photos.filter(Boolean);
+  }
+  return [];
+}
+function toEmbedUrl(url){
+  const u = String(url||"").trim();
+  if(!u) return "";
+  // YouTube
+  const yt = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_\-]+)/);
+  if(yt && yt[1]) return "https://www.youtube.com/embed/" + yt[1];
+  // Vimeo
+  const vm = u.match(/vimeo\.com\/(\d+)/);
+  if(vm && vm[1]) return "https://player.vimeo.com/video/" + vm[1];
+  // sinon on tente direct
+  return u;
+}
+
+function openLightbox(src){
+  const lb = document.getElementById("lightbox");
+  const img = document.getElementById("lbImg");
+  img.src = src;
+  lb.style.display = "flex";
+}
+function closeLightbox(){
+  document.getElementById("lightbox").style.display = "none";
+}
 
 (async()=>{
-  const { data } = await SB
-    .from("loc_listings")
-    .select("*")
+  const { data, error } = await SB
+    .from("digiy_logements")
+    .select("id,owner_id,proprietaire_phone,proprietaire_email,nom,adresse,ville,description,personnes_max,chambres,lits,salles_bain,prix_nuit,prix_semaine,prix_mois,frais_supplements,photo_url,video_url,photos_urls,status,created_at")
     .eq("id", id)
     .single();
 
-  LOC = data;
+  if(error || !data){
+    showNote("Logement introuvable.");
+    return;
+  }
+  LOG = data;
 
-  document.getElementById("title").textContent = data.title;
-  document.getElementById("city").textContent = data.city;
-  document.getElementById("price").textContent =
-    data.price_per_night + " FCFA / nuit";
+  // Titre / meta
+  document.getElementById("nom").textContent = data.nom || "Logement";
+  document.getElementById("meta").textContent = [data.ville, data.adresse].filter(Boolean).join(" • ");
+
+  // Cover
+  const cover = document.getElementById("cover");
+  cover.src = data.photo_url || "";
+  if(!data.photo_url){
+    cover.style.height = "240px";
+    cover.style.background = "rgba(255,255,255,.06)";
+  }
+
+  // Prix
+  document.getElementById("prix").textContent = money(data.prix_nuit) + " / nuit";
+  const plus = [];
+  if(data.prix_semaine) plus.push(money(data.prix_semaine) + " / semaine");
+  if(data.prix_mois) plus.push(money(data.prix_mois) + " / mois");
+  document.getElementById("pricesPlus").textContent = plus.join(" • ");
+
+  // Description
+  document.getElementById("desc").textContent = data.description || "—";
+
+  // KPIs
+  const k = document.getElementById("kpis");
+  const addKpi = (t)=>{ const d=document.createElement("div"); d.className="kpi"; d.textContent=t; k.appendChild(d); };
+  if(data.personnes_max) addKpi("👥 " + data.personnes_max + " pers.");
+  if(data.chambres) addKpi("🛏️ " + data.chambres + " chambres");
+  if(data.lits) addKpi("🛌 " + data.lits + " lits");
+  if(data.salles_bain) addKpi("🛁 " + data.salles_bain + " sdb");
+
+  // Galerie
+  const gallery = document.getElementById("gallery");
+  const urls = [data.photo_url, ...parsePhotos(data.photos_urls)].filter(Boolean);
+  const uniq = [...new Set(urls)].slice(0, 12);
+  uniq.forEach(src=>{
+    const img = document.createElement("img");
+    img.className = "gimg";
+    img.loading = "lazy";
+    img.src = src;
+    img.alt = "Photo";
+    img.onclick = ()=>openLightbox(src);
+    gallery.appendChild(img);
+  });
+
+  // Vidéo
+  const embed = toEmbedUrl(data.video_url);
+  if(embed){
+    document.getElementById("video").src = embed;
+    document.getElementById("videoBlock").style.display = "block";
+  }
+
+  // Bloc propriétaire (simple, stylé)
+  document.getElementById("avatar").textContent = initials(data.nom || "DIGIY");
+  document.getElementById("ownerName").textContent = "Propriétaire • " + (data.ville ? data.ville : "DIGIY");
+  document.getElementById("ownerHint").textContent = "Contact direct via DIGIY LOC";
+
+  // Frais/conditions
+  document.getElementById("fees").textContent = data.frais_supplements || "Conditions à confirmer avec le propriétaire.";
+
+  // Boutons
+  document.getElementById("btnShare").onclick = async ()=>{
+    const shareData = {
+      title: "DIGIY LOC — " + (data.nom||"Logement"),
+      text: "Regarde ce logement sur DIGIY LOC : " + (data.nom||""),
+      url: location.href
+    };
+    try{
+      if(navigator.share) await navigator.share(shareData);
+      else { await navigator.clipboard.writeText(location.href); showNote("Lien copié ✅"); }
+    }catch{}
+  };
+
+  document.getElementById("btnMap").onclick = ()=>{
+    const q = encodeURIComponent([data.nom, data.adresse, data.ville].filter(Boolean).join(" "));
+    location.href = "https://www.google.com/maps/search/?api=1&query=" + q;
+  };
+
+  document.getElementById("btnContact").onclick = contactPro;
 })();
-</script>
 
+async function contactPro(){
+  if(!LOG) return;
+
+  // ✅ Guard sur l’action (pas sur la page)
+  const s = String(LOG.status||"").toLowerCase();
+  const allowed = ["actif","active","published","online"];
+  if(!allowed.includes(s)){
+    location.href = "https://pay.digiylyfe.com/loc";
+    return;
+  }
+
+  if(!LOG.proprietaire_phone){
+    showNote("Contact indisponible pour le moment.");
+    return;
+  }
+
+  const phone = String(LOG.proprietaire_phone).replace(/\D/g,'');
+  const msg = encodeURIComponent("Bonjour, je vous contacte via DIGIY LOC pour : " + (LOG.nom||"ce logement") + ".");
+  location.href = `https://wa.me/${phone}?text=${msg}`;
+}
+</script>
 </body>
 </html>
+
