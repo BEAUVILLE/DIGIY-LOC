@@ -10,39 +10,79 @@
 
 <style>
 :root{
-  --bg:#020617; --card:#0b1220; --line:#1f2937;
-  --ink:#f9fafb; --muted:#cbd5f5; --gold:#facc15; --green:#22c55e;
+  --bg:#020617;
+  --card:#0b1220;
+  --line:#1f2937;
+  --ink:#f9fafb;
+  --muted:#cbd5f5;
+  --gold:#facc15;
+  --green:#22c55e;
 }
-body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+}
 .wrap{max-width:1100px;margin:0 auto}
 header{padding:22px 16px;text-align:center}
 h1{margin:0;font-size:2rem}
 p{margin:8px 0 0;color:var(--muted)}
 .status{
-  margin:0 16px 10px; padding:10px 12px; border:1px solid var(--line);
-  border-radius:12px; color:var(--muted); background:rgba(255,255,255,.03);
-  white-space:pre-wrap;
+  margin:0 16px 10px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  color:var(--muted);
+  background:rgba(255,255,255,.03);
 }
 .grid{
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:14px; padding:16px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:14px;
+  padding:16px;
 }
 .card{
-  background:var(--card); border:1px solid var(--line);
-  border-radius:16px; padding:14px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px;
 }
-.card h3{margin:0 0 6px;font-size:1.15rem}
-.meta{color:var(--muted);font-size:.95rem}
-.price{margin-top:8px;color:var(--gold);font-weight:900;font-size:1.05rem}
+.card h3{
+  margin:0 0 6px;
+  font-size:1.15rem;
+}
+.meta{
+  color:var(--muted);
+  font-size:.95rem;
+}
+.price{
+  margin-top:8px;
+  color:var(--gold);
+  font-weight:900;
+  font-size:1.05rem;
+}
 .thumb{
-  width:100%; height:160px; object-fit:cover; border-radius:14px;
-  border:1px solid var(--line); background:rgba(255,255,255,.04);
-  display:block; margin-bottom:10px;
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+  display:block;
+  margin-bottom:10px;
 }
 a.btn{
-  display:block; margin-top:12px; text-align:center;
-  padding:11px 12px; border-radius:12px;
-  background:var(--green); color:#022c22; text-decoration:none; font-weight:900;
+  display:block;
+  margin-top:12px;
+  text-align:center;
+  padding:11px 12px;
+  border-radius:12px;
+  background:var(--green);
+  color:#022c22;
+  text-decoration:none;
+  font-weight:900;
 }
 </style>
 </head>
@@ -54,12 +94,12 @@ a.btn{
     <p>Locations direct propriétaire — 0% commission</p>
   </header>
 
-  <div class="status" id="status">Chargement…</div>
+  <div class="status" id="status">Chargement des logements…</div>
   <div class="grid" id="grid"></div>
 </div>
 
 <script>
-/* 🔐 SUPABASE — DÉJÀ POSÉ */
+/* 🔐 SUPABASE */
 const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
 const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
@@ -72,29 +112,28 @@ const grid = document.getElementById("grid");
 function setStatus(t){ statusEl.textContent = t; }
 function esc(s){
   return String(s ?? "")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;")
-    .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
 }
 function money(n){
-  const v = Number(n||0);
-  return v.toLocaleString("fr-FR") + " FCFA";
+  return Number(n||0).toLocaleString("fr-FR") + " FCFA";
 }
 
 (async()=>{
   try{
-    setStatus("Chargement des logements…");
-
     const { data, error } = await SB
       .from("digiy_logements")
       .select("id,nom,ville,adresse,prix_nuit,photo_url,status,created_at")
-      .eq("status", "active")
+      .in("status", ["actif","Actif","active","Active","published","Published","online","Online"])
       .order("created_at", { ascending:false })
       .limit(60);
 
     if(error){
-      console.error("SUPABASE ERROR:", error);
-      setStatus("Erreur Supabase:\n" + (error.message || JSON.stringify(error)));
+      console.error(error);
+      setStatus("Erreur Supabase : " + error.message);
       return;
     }
 
@@ -109,24 +148,27 @@ function money(n){
       const div = document.createElement("div");
       div.className = "card";
 
-      const img = l.photo_url ? `<img class="thumb" loading="lazy" src="${esc(l.photo_url)}" alt="${esc(l.nom||"Logement")}">`
-                              : `<div class="thumb"></div>`;
+      const img = l.photo_url
+        ? `<img class="thumb" loading="lazy" src="${esc(l.photo_url)}" alt="${esc(l.nom)}">`
+        : `<div class="thumb"></div>`;
 
       div.innerHTML = `
         ${img}
-        <h3>${esc(l.nom || "Logement")}</h3>
-        <div class="meta">${esc(l.ville || "")}${l.adresse ? " • " + esc(l.adresse) : ""}</div>
+        <h3>${esc(l.nom)}</h3>
+        <div class="meta">${esc(l.ville)}${l.adresse ? " • " + esc(l.adresse) : ""}</div>
         <div class="price">${money(l.prix_nuit)} / nuit</div>
         <a class="btn" href="loc.html?id=${encodeURIComponent(l.id)}">Voir le logement</a>
       `;
+
       grid.appendChild(div);
     });
 
   }catch(e){
-    console.error("JS ERROR:", e);
-    setStatus("Erreur JS:\n" + (e.message || e));
+    console.error(e);
+    setStatus("Erreur JS : " + e.message);
   }
 })();
 </script>
 </body>
 </html>
+
