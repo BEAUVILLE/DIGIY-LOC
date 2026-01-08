@@ -17,72 +17,127 @@
   --muted:#cbd5f5;
   --gold:#facc15;
   --green:#22c55e;
+  --soft:rgba(255,255,255,.03);
 }
 *{box-sizing:border-box}
 body{
   margin:0;
   font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-  background:var(--bg);
+  background:
+    radial-gradient(900px 500px at 10% -10%, rgba(250,204,21,.12), transparent 60%),
+    radial-gradient(900px 500px at 90% 0%, rgba(34,197,94,.10), transparent 60%),
+    var(--bg);
   color:var(--ink);
 }
 .wrap{max-width:1100px;margin:0 auto}
-header{padding:22px 16px;text-align:center}
-h1{margin:0;font-size:2rem}
-p{margin:8px 0 0;color:var(--muted)}
+header{padding:22px 16px 10px;text-align:center}
+h1{margin:0;font-size:2.1rem;letter-spacing:.2px}
+.tagline{margin:8px 0 0;color:var(--muted);font-size:1.02rem}
+.pills{
+  margin-top:12px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap;
+}
+.pill{
+  border:1px solid var(--line);
+  background:var(--soft);
+  color:var(--muted);
+  padding:7px 10px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:.92rem;
+}
 .status{
-  margin:0 16px 10px;
+  margin:12px 16px 8px;
   padding:10px 12px;
   border:1px solid var(--line);
   border-radius:12px;
   color:var(--muted);
-  background:rgba(255,255,255,.03);
+  background:var(--soft);
+  white-space:pre-wrap;
 }
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
   gap:14px;
   padding:16px;
 }
 .card{
   background:var(--card);
   border:1px solid var(--line);
-  border-radius:16px;
+  border-radius:18px;
   padding:14px;
+  transition:transform .08s ease, border-color .08s ease;
+  cursor:pointer;
 }
-.card h3{
-  margin:0 0 6px;
-  font-size:1.15rem;
-}
-.meta{
-  color:var(--muted);
-  font-size:.95rem;
-}
-.price{
-  margin-top:8px;
-  color:var(--gold);
-  font-weight:900;
-  font-size:1.05rem;
-}
+.card:hover{ transform:translateY(-2px); border-color:rgba(250,204,21,.45) }
 .thumb{
   width:100%;
-  height:160px;
+  height:170px;
   object-fit:cover;
-  border-radius:14px;
+  border-radius:16px;
   border:1px solid var(--line);
   background:rgba(255,255,255,.04);
   display:block;
   margin-bottom:10px;
 }
+.topline{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.card h3{
+  margin:0;
+  font-size:1.18rem;
+  line-height:1.2;
+}
+.badge{
+  border:1px solid rgba(250,204,21,.35);
+  background:rgba(250,204,21,.10);
+  color:#fde68a;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:.82rem;
+  white-space:nowrap;
+}
+.meta{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:.95rem;
+}
+.desc{
+  margin-top:10px;
+  color:rgba(203,213,245,.92);
+  font-size:.96rem;
+  line-height:1.35;
+}
+.priceRow{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:10px;
+}
+.price{
+  color:var(--gold);
+  font-weight:950;
+  font-size:1.08rem;
+}
+.small{
+  color:var(--muted);
+  font-weight:700;
+  font-size:.9rem;
+}
 a.btn{
   display:block;
   margin-top:12px;
   text-align:center;
-  padding:11px 12px;
-  border-radius:12px;
+  padding:12px 12px;
+  border-radius:14px;
   background:var(--green);
   color:#022c22;
   text-decoration:none;
-  font-weight:900;
+  font-weight:950;
 }
 </style>
 </head>
@@ -91,10 +146,16 @@ a.btn{
 <div class="wrap">
   <header>
     <h1>🏡 DIGIY LOC</h1>
-    <p>Locations direct propriétaire — 0% commission</p>
+    <div class="tagline">Ici, tu loues <b>direct propriétaire</b>. Pas d’intermédiaire. Pas de commission.</div>
+
+    <div class="pills">
+      <div class="pill">⚡ Simple & rapide</div>
+      <div class="pill">💬 Contact direct</div>
+      <div class="pill">🟡 0% commission</div>
+    </div>
   </header>
 
-  <div class="status" id="status">Chargement des logements…</div>
+  <div class="status" id="status">Chargement…</div>
   <div class="grid" id="grid"></div>
 </div>
 
@@ -121,43 +182,69 @@ function esc(s){
 function money(n){
   return Number(n||0).toLocaleString("fr-FR") + " FCFA";
 }
+function snippet(s, n=110){
+  const t = String(s ?? "").trim().replace(/\s+/g," ");
+  return t.length > n ? t.slice(0,n-1) + "…" : t;
+}
+function ficheUrl(id){ return `loc.html?id=${encodeURIComponent(id)}`; }
 
 (async()=>{
   try{
+    setStatus("On regarde ce qui est dispo…");
+
     const { data, error } = await SB
       .from("digiy_logements")
-      .select("id,nom,ville,adresse,prix_nuit,photo_url,status,created_at")
+      .select("id,nom,ville,adresse,description,prix_nuit,photo_url,status,created_at")
       .in("status", ["actif","Actif","active","Active","published","Published","online","Online"])
       .order("created_at", { ascending:false })
       .limit(60);
 
     if(error){
       console.error(error);
-      setStatus("Erreur Supabase : " + error.message);
+      setStatus("Oups… petit souci technique : " + error.message);
       return;
     }
 
     if(!data || data.length === 0){
-      setStatus("Aucun logement disponible pour le moment.");
+      setStatus("Rien de dispo pour le moment. Reviens dans un instant, ça arrive. 🦅");
       return;
     }
 
-    setStatus(`${data.length} logement(s) disponible(s).`);
+    // mini status plus chaleureux
+    const villes = [...new Set(data.map(x => (x.ville||"").trim()).filter(Boolean))];
+    const extra = villes.length ? ` • ${villes.slice(0,2).join(", ")}${villes.length>2?"…":""}` : "";
+    setStatus(`✅ ${data.length} logement(s) dispo${extra}`);
 
     data.forEach(l=>{
+      const url = ficheUrl(l.id);
+
       const div = document.createElement("div");
       div.className = "card";
+      div.setAttribute("role","link");
+      div.setAttribute("tabindex","0");
+      div.onclick = () => location.href = url;
+      div.onkeydown = (e) => { if(e.key === "Enter") location.href = url; };
 
       const img = l.photo_url
-        ? `<img class="thumb" loading="lazy" src="${esc(l.photo_url)}" alt="${esc(l.nom)}">`
+        ? `<img class="thumb" loading="lazy" src="${esc(l.photo_url)}" alt="${esc(l.nom || "Logement")}">`
         : `<div class="thumb"></div>`;
+
+      const meta = [l.ville, l.adresse].filter(Boolean).join(" • ");
+      const desc = l.description ? `<div class="desc">${esc(snippet(l.description))}</div>` : "";
 
       div.innerHTML = `
         ${img}
-        <h3>${esc(l.nom)}</h3>
-        <div class="meta">${esc(l.ville)}${l.adresse ? " • " + esc(l.adresse) : ""}</div>
-        <div class="price">${money(l.prix_nuit)} / nuit</div>
-        <a class="btn" href="loc.html?id=${encodeURIComponent(l.id)}">Voir le logement</a>
+        <div class="topline">
+          <h3>${esc(l.nom || "Logement")}</h3>
+          <div class="badge">Contact direct</div>
+        </div>
+        <div class="meta">${esc(meta)}</div>
+        ${desc}
+        <div class="priceRow">
+          <div class="price">${money(l.prix_nuit)} <span class="small">/ nuit</span></div>
+          <div class="small">0% commission</div>
+        </div>
+        <a class="btn" href="${url}" onclick="event.stopPropagation()">Voir la fiche</a>
       `;
 
       grid.appendChild(div);
@@ -165,10 +252,9 @@ function money(n){
 
   }catch(e){
     console.error(e);
-    setStatus("Erreur JS : " + e.message);
+    setStatus("Erreur JS : " + (e.message || e));
   }
 })();
 </script>
 </body>
 </html>
-
