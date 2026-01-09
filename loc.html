@@ -106,7 +106,7 @@ input,select{
   <section class="card">
     <h3>📅 Réserver (anti-lapin)</h3>
     <div class="small muted">
-      <b>Règle DIGIY :</b> sans acompte = pas confirmé.  
+      <b>Règle DIGIY :</b> sans acompte = pas confirmé.
       Le logement reste disponible jusqu’au paiement de l’acompte.
     </div>
 
@@ -166,8 +166,13 @@ function nights(){
 }
 function drivePreview(url){
   if(!url) return "";
-  const m=url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  const m=String(url).match(/drive\.google\.com\/file\/d\/([^/]+)/);
   return m?`https://drive.google.com/file/d/${m[1]}/preview`:"";
+}
+// ✅ anti-NULL numbers
+function safeNum(v, fallback=0){
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
 }
 
 /* =========================
@@ -183,10 +188,16 @@ async function load(){
     .single();
 
   if(error || !data){
-    note("Logement introuvable","bad"); return;
+    console.error(error);
+    note("Logement introuvable","bad");
+    return;
   }
 
   logement=data;
+
+  // ✅ FIX PRINCIPAL: deposit_percent ne doit JAMAIS être null/undefined
+  logement.deposit_percent = safeNum(logement.deposit_percent, 0);
+  logement.prix_nuit       = safeNum(logement.prix_nuit, 0);
 
   photo.src = logement.photo_url || "";
   photo.alt = logement.nom || "Logement";
@@ -212,8 +223,11 @@ async function load(){
 
 function updateDeposit(){
   if(!logement) return;
-  const amt = Math.round(nights()*logement.prix_nuit*(logement.deposit_percent/100));
-  depositAmount.textContent = amt?money(amt):"—";
+
+  const dp = safeNum(logement.deposit_percent, 0);
+  const amt = Math.round(nights() * logement.prix_nuit * (dp/100));
+
+  depositAmount.textContent = amt ? money(amt) : "—";
 }
 
 [dateIn,dateOut].forEach(el=>el.addEventListener("change",updateDeposit));
@@ -222,36 +236,55 @@ function updateDeposit(){
    CONFIRM ACOMPTE
 ========================= */
 btnConfirm.onclick = async ()=>{
-  if(!waveRef.value.trim()){
-    note("Référence Wave obligatoire","bad"); return;
-  }
-  const amt = Math.round(nights()*logement.prix_nuit*(logement.deposit_percent/100));
-  if(!amt){
-    note("Dates invalides","bad"); return;
-  }
+  try{
+    if(!logement){
+      note("Logement non chargé","bad");
+      return;
+    }
 
-  const payload = {
-    listing_id: logement.id,
-    owner_id: logement.owner_id,
-    client_name: clientName.value || "Client",
-    client_phone: clientPhone.value || "",
-    date_in: dateIn.value,
-    date_out: dateOut.value,
-    amount_expected: amt,
-    deposit_percent: logement.deposit_percent,
-    payment_method: "wave",
-    wave_phone: logement.wave_phone,
-    wave_name: logement.wave_name,
-    wave_tx_ref: waveRef.value.trim(),
-    status: "pending"
-  };
+    if(!waveRef.value.trim()){
+      note("Référence Wave obligatoire","bad");
+      return;
+    }
 
-  const { error } = await SB.from("loc_payment_intents").insert(payload);
-  if(error){
-    console.error(error);
-    note("Erreur enregistrement acompte","bad"); return;
+    const dp = safeNum(logement.deposit_percent, 0);
+    const amt = Math.round(nights() * logement.prix_nuit * (dp/100));
+
+    if(!amt){
+      note("Dates invalides","bad");
+      return;
+    }
+
+    const payload = {
+      listing_id: logement.id,
+      owner_id: logement.owner_id,
+      client_name: (clientName.value || "Client").trim(),
+      client_phone: (clientPhone.value || "").trim(),
+      date_in: dateIn.value,
+      date_out: dateOut.value,
+      amount_expected: amt,
+      deposit_percent: dp, // ✅ JAMAIS null
+      payment_method: "wave",
+      wave_phone: logement.wave_phone,
+      wave_name: logement.wave_name,
+      wave_tx_ref: waveRef.value.trim(),
+      status: "pending"
+    };
+
+    // ✅ FIX: insert en tableau (plus safe)
+    const { error } = await SB.from("loc_payment_intents").insert([payload]);
+
+    if(error){
+      console.error(error);
+      note("Erreur enregistrement acompte","bad");
+      return;
+    }
+
+    note("Acompte déclaré ✅ Le propriétaire va confirmer.","ok");
+  }catch(e){
+    console.error(e);
+    note("Erreur technique (console)","bad");
   }
-  note("Acompte déclaré ✅ Le propriétaire va confirmer.","ok");
 };
 
 load();
