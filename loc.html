@@ -3,18 +3,21 @@
 <head>
 <meta charset="utf-8">
 <title>DIGIY LOC — Fiche logement</title>
-<meta name="viewport" content="width=device-width, initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Location directe propriétaire. Paiement Wave. 0% commission.">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root{
   --bg:#020617; --card:#0b1220; --line:#1f2937;
   --ink:#f9fafb; --muted:#cbd5f5;
-  --gold:#facc15; --green:#22c55e;
+  --gold:#facc15; --green:#22c55e; --danger:#ef4444;
 }
+*{box-sizing:border-box}
 body{
-  margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;
-  background:linear-gradient(180deg,#0b1020,#020617);
+  margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  background:radial-gradient(900px 500px at 10% -10%, rgba(34,197,94,.15), transparent 60%), var(--bg);
   color:var(--ink);
 }
 .wrap{max-width:980px;margin:0 auto;padding:14px}
@@ -25,200 +28,231 @@ body{
   padding:14px;
   margin-bottom:14px;
 }
-.hero-photo{
-  width:100%;
-  height:auto;
-  max-height:70vh;
-  object-fit:contain;
-  background:#020617;
-  border-radius:16px;
-}
-h1{margin:10px 0 4px}
+h1{margin:10px 0 4px;font-size:1.6rem}
 .muted{color:var(--muted)}
+.hero-media{margin-bottom:10px}
+.hero-photo{
+  width:100%;max-height:70vh;object-fit:contain;
+  background:#020617;border-radius:16px;border:1px solid var(--line);
+}
+.video-wrap{margin-top:10px}
+.video-wrap iframe{
+  width:100%;height:420px;border:0;border-radius:16px;background:#000
+}
+@media(max-width:720px){ .video-wrap iframe{height:240px} }
+
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:4px 8px;color:var(--muted)}
+
 label{display:block;margin-top:10px;font-weight:800}
-input{
+input,select{
   width:100%;padding:10px;border-radius:12px;
   border:1px solid var(--line);background:#020617;color:#fff;
 }
 .btn{
-  margin-top:12px;
-  width:100%;padding:12px;
-  border-radius:14px;border:0;
-  font-weight:900;
+  margin-top:12px;width:100%;padding:12px;border-radius:14px;border:0;
+  font-weight:900;cursor:pointer
 }
 .btn.primary{background:var(--green);color:#022c22}
+.btn.ghost{background:#020617;color:#fff;border:1px solid var(--line)}
 .note{
-  margin-top:10px;padding:10px;border-radius:12px;
-  border:1px solid var(--line);
+  margin-top:10px;padding:10px;border-radius:12px;border:1px solid var(--line)
 }
 .note.ok{border-color:#22c55e;color:#bbf7d0}
 .note.bad{border-color:#ef4444;color:#fecaca}
+
 .wave-box{
-  margin-top:10px;
-  padding:10px;border-radius:14px;
-  border:1px solid var(--line);
-  background:rgba(34,197,94,.08);
+  margin-top:10px;padding:10px;border-radius:14px;border:1px solid var(--line);
+  background:rgba(34,197,94,.08)
 }
+.sep{height:1px;background:var(--line);margin:10px 0}
+.small{font-size:12px}
 </style>
 </head>
 
 <body>
 <div class="wrap">
-  <div class="card">
-    <img id="photo" class="hero-photo">
+
+  <!-- ===== HERO / STORY ===== -->
+  <section class="card">
+    <div class="hero-media">
+      <img id="photo" class="hero-photo" alt="">
+      <div class="video-wrap" id="videoWrap" style="display:none">
+        <iframe id="videoFrame" allow="autoplay; encrypted-media"></iframe>
+      </div>
+    </div>
+
     <h1 id="nom">—</h1>
     <div class="muted" id="ville">—</div>
-    <p id="desc"></p>
-  </div>
+    <p id="desc" class="small"></p>
 
-  <div class="card">
-    <h3>📅 Réservation</h3>
+    <div class="chips">
+      <span class="chip">0% commission</span>
+      <span class="chip">Paiement direct</span>
+      <span class="chip">Wave accepté</span>
+      <span class="chip">Confirmation par acompte</span>
+    </div>
+  </section>
 
-    <label>Date arrivée</label>
+  <!-- ===== TARIFS ===== -->
+  <section class="card">
+    <strong>💰 Tarifs</strong>
+    <div class="sep"></div>
+    <div>Nuit : <b id="prixNuit">—</b></div>
+    <div class="small muted">Les tarifs longs séjours sont confirmés avec le propriétaire.</div>
+  </section>
+
+  <!-- ===== RÉSERVATION + ACOMPTE ===== -->
+  <section class="card">
+    <h3>📅 Réserver (anti-lapin)</h3>
+    <div class="small muted">
+      <b>Règle DIGIY :</b> sans acompte = pas confirmé.  
+      Le logement reste disponible jusqu’au paiement de l’acompte.
+    </div>
+
+    <label>Date d’arrivée</label>
     <input type="date" id="dateIn">
 
-    <label>Date départ</label>
+    <label>Date de départ</label>
     <input type="date" id="dateOut">
 
     <label>Votre nom</label>
-    <input id="clientName">
+    <input id="clientName" placeholder="Votre nom">
 
     <label>Votre téléphone</label>
-    <input id="clientPhone">
+    <input id="clientPhone" placeholder="+221 …">
 
+    <!-- ===== ACOMPTE WAVE ===== -->
     <div class="wave-box">
       <strong>💳 Acompte Wave</strong><br>
-      Bénéficiaire : <span id="waveName"></span><br>
-      Numéro : <span id="wavePhone"></span><br>
-      Acompte demandé : <strong id="depositAmount">—</strong>
+      Bénéficiaire : <b id="waveName">—</b><br>
+      Numéro : <b id="wavePhone">—</b><br>
+      Acompte demandé : <b id="depositAmount">—</b>
     </div>
 
-    <label>Référence Wave</label>
-    <input id="waveRef" placeholder="ID transaction Wave">
+    <label>Référence / ID transaction Wave</label>
+    <input id="waveRef" placeholder="Ex : WAVE-8F92KD…">
 
     <button class="btn primary" id="btnConfirm">✅ J’ai payé l’acompte</button>
     <div id="status" class="note"></div>
-  </div>
+  </section>
+
 </div>
 
 <script>
+/* =========================
+   SUPABASE
+========================= */
 const SUPABASE_URL="https://wesqmwjjtsefyjnluosj.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
 const SB=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-const id=new URLSearchParams(location.search).get("id");
-let logement=null;
+/* =========================
+   HELPERS
+========================= */
+const qs = new URLSearchParams(location.search);
+const listingId = qs.get("id");
 
 function note(msg,type){
   const n=document.getElementById("status");
   n.className="note "+(type||"");
   n.textContent=msg;
 }
-
+function money(x){ return (x||0).toLocaleString("fr-FR")+" FCFA"; }
 function nights(){
   if(!dateIn.value||!dateOut.value) return 0;
-  return (new Date(dateOut.value)-new Date(dateIn.value))/86400000;
+  const d=(new Date(dateOut.value)-new Date(dateIn.value))/86400000;
+  return d>0?Math.round(d):0;
+}
+function drivePreview(url){
+  if(!url) return "";
+  const m=url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  return m?`https://drive.google.com/file/d/${m[1]}/preview`:"";
 }
 
+/* =========================
+   LOAD LOGEMENT
+========================= */
+let logement=null;
+
 async function load(){
-  const {data}=await SB.from("digiy_logements").select("*").eq("id",id).single();
+  const { data, error } = await SB
+    .from("digiy_logements")
+    .select("*")
+    .eq("id", listingId)
+    .single();
+
+  if(error || !data){
+    note("Logement introuvable","bad"); return;
+  }
+
   logement=data;
-  photo.src=logement.photo_url;
-  nom.textContent=logement.nom;
-  ville.textContent=logement.ville;
-  desc.textContent=logement.description;
-  waveName.textContent=logement.wave_name;
-  wavePhone.textContent=logement.wave_phone;
+
+  photo.src = logement.photo_url || "";
+  photo.alt = logement.nom || "Logement";
+
+  nom.textContent = logement.nom || "Logement";
+  ville.textContent = logement.ville || "";
+  desc.textContent = logement.description || "";
+
+  prixNuit.textContent = money(logement.prix_nuit);
+
+  waveName.textContent = logement.wave_name || "Propriétaire";
+  wavePhone.textContent = logement.wave_phone || "—";
+
+  // vidéo
+  const pv = drivePreview(logement.video_url);
+  if(pv){
+    videoWrap.style.display="block";
+    videoFrame.src=pv;
+  }
+
+  updateDeposit();
 }
 
 function updateDeposit(){
-  const amt=Math.round((nights()*logement.prix_nuit)*(logement.deposit_percent/100));
-  depositAmount.textContent=amt?amt.toLocaleString("fr-FR")+" FCFA":"—";
+  if(!logement) return;
+  const amt = Math.round(nights()*logement.prix_nuit*(logement.deposit_percent/100));
+  depositAmount.textContent = amt?money(amt):"—";
 }
 
-[dateIn,dateOut].forEach(e=>e.onchange=updateDeposit);
+[dateIn,dateOut].forEach(el=>el.addEventListener("change",updateDeposit));
 
-btnConfirm.onclick=async()=>{
-  if(!waveRef.value) return note("Référence Wave obligatoire","bad");
+/* =========================
+   CONFIRM ACOMPTE
+========================= */
+btnConfirm.onclick = async ()=>{
+  if(!waveRef.value.trim()){
+    note("Référence Wave obligatoire","bad"); return;
+  }
+  const amt = Math.round(nights()*logement.prix_nuit*(logement.deposit_percent/100));
+  if(!amt){
+    note("Dates invalides","bad"); return;
+  }
 
-  const payload={
-    listing_id:logement.id,
-    owner_id:logement.owner_id,
-    client_name:clientName.value,
-    client_phone:clientPhone.value,
-    date_in:dateIn.value,
-    date_out:dateOut.value,
-    amount_expected:Math.round((nights()*logement.prix_nuit)*(logement.deposit_percent/100)),
-    deposit_percent:logement.deposit_percent,
-    payment_method:"wave",
-    wave_phone:logement.wave_phone,
-    wave_name:logement.wave_name,
-    wave_tx_ref:waveRef.value,
-    status:"pending"
+  const payload = {
+    listing_id: logement.id,
+    owner_id: logement.owner_id,
+    client_name: clientName.value || "Client",
+    client_phone: clientPhone.value || "",
+    date_in: dateIn.value,
+    date_out: dateOut.value,
+    amount_expected: amt,
+    deposit_percent: logement.deposit_percent,
+    payment_method: "wave",
+    wave_phone: logement.wave_phone,
+    wave_name: logement.wave_name,
+    wave_tx_ref: waveRef.value.trim(),
+    status: "pending"
   };
 
-  const {error}=await SB.from("loc_payment_intents").insert(payload);
-  if(error) return note("Erreur enregistrement","bad");
-  note("Acompte déclaré. Le propriétaire va confirmer.","ok");
+  const { error } = await SB.from("loc_payment_intents").insert(payload);
+  if(error){
+    console.error(error);
+    note("Erreur enregistrement acompte","bad"); return;
+  }
+  note("Acompte déclaré ✅ Le propriétaire va confirmer.","ok");
 };
-
-load();
-</script>
-</body>
-</html>
-🔵 2️⃣ pro-loc.html — ESPACE PRO (gestion acomptes)
-👉 À placer dans le dossier PRO
-
-html
-Copier le code
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<title>DIGIY LOC PRO — Acomptes</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-body{font-family:system-ui;background:#020617;color:#fff;padding:14px}
-.card{border:1px solid #1f2937;border-radius:16px;padding:14px;margin-bottom:12px}
-.btn{padding:8px 10px;border-radius:10px;border:0;font-weight:800;margin-right:6px}
-.ok{background:#22c55e;color:#022c22}
-.no{background:#ef4444;color:#fff}
-</style>
-</head>
-
-<body>
-<h1>🧾 Acomptes reçus</h1>
-<div id="list"></div>
-
-<script>
-const SUPABASE_URL="https://wesqmwjjtsefyjnluosj.supabase.co";
-const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-const SB=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-
-async function load(){
-  const {data}=await SB.from("loc_payment_intents").select("*").order("created_at",{ascending:false});
-  list.innerHTML="";
-  data.forEach(d=>{
-    const div=document.createElement("div");
-    div.className="card";
-    div.innerHTML=`
-      <strong>${d.client_name}</strong><br>
-      ${d.amount_expected} FCFA — ${d.wave_tx_ref}<br>
-      ${d.date_in} → ${d.date_out}<br>
-      Statut : ${d.status}<br><br>
-      <button class="btn ok" onclick="update('${d.id}','confirmed')">Confirmer</button>
-      <button class="btn no" onclick="update('${d.id}','rejected')">Refuser</button>
-    `;
-    list.appendChild(div);
-  });
-}
-
-async function update(id,status){
-  await SB.from("loc_payment_intents").update({status}).eq("id",id);
-  load();
-}
 
 load();
 </script>
