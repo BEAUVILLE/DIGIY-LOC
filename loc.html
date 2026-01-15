@@ -83,6 +83,18 @@ input,select{
 }
 .sep{height:1px;background:var(--line);margin:10px 0}
 .small{font-size:12px}
+
+/* ✅ opt-in box */
+.optin-box{
+  margin-top:10px;padding:10px;border-radius:14px;border:1px solid var(--line);
+  background:rgba(250,204,21,.06)
+}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row > *{flex:1}
+.switch{
+  display:flex;align-items:center;gap:10px;margin-top:8px
+}
+.switch input{width:auto}
 </style>
 </head>
 
@@ -142,6 +154,33 @@ input,select{
     <label>Votre téléphone</label>
     <input id="clientPhone" placeholder="+221 …">
 
+    <!-- ✅ LANGUE + OPT-IN -->
+    <div class="optin-box">
+      <strong>🌍 Langue & rappels</strong>
+      <div class="small muted">On vous enverra les rappels dans votre langue (WhatsApp).</div>
+
+      <div class="row">
+        <div>
+          <label>Votre langue</label>
+          <select id="clientLang">
+            <option value="fr">Français</option>
+            <option value="wo">Wolof</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <div>
+          <label>Rappels WhatsApp</label>
+          <div class="switch">
+            <input type="checkbox" id="waOptin" checked>
+            <span class="small muted">Recevoir J-1 / Jour J / etc.</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn ghost" id="btnSavePrefs" type="button">💾 Enregistrer langue & rappels</button>
+      <div class="small muted" id="prefsHint"></div>
+    </div>
+
     <!-- ===== ACOMPTE WAVE ===== -->
     <div class="wave-box">
       <strong>💳 Acompte Wave</strong><br>
@@ -189,13 +228,26 @@ function safeNum(v, fallback=0){
   return Number.isFinite(n) ? n : fallback;
 }
 
+/* ✅ Normalise phone Senegal (+221...) : simple, sans prise de tête */
+function normPhone(raw){
+  const s = String(raw||"").trim();
+  if(!s) return "";
+  let x = s.replace(/[^\d+]/g,"");
+  if(x.startsWith("00")) x = "+" + x.slice(2);
+  // si l’utilisateur tape 77xxxxxxx (9 chiffres), on le met en +221
+  const digits = x.replace(/[^\d]/g,"");
+  if(!x.startsWith("+") && digits.length === 9) return "+221" + digits;
+  if(x.startsWith("+")) return x;
+  // fallback: on garde digits
+  return "+" + digits;
+}
+
 /* ✅ convertit un lien Drive "file/d/ID/view" en lien "view" (à ouvrir) */
 function driveOpenLink(url){
   if(!url) return "";
   const s = String(url);
   const m = s.match(/drive\.google\.com\/file\/d\/([^/]+)/);
   if(m && m[1]) return `https://drive.google.com/file/d/${m[1]}/view`;
-  // si c’est déjà un lien partage, on le garde
   if(s.includes("drive.google.com")) return s;
   return "";
 }
@@ -246,6 +298,9 @@ async function load(){
   }
 
   updateDeposit();
+
+  // si phone déjà dans URL ou prérempli, on peut tenter de charger prefs
+  tryLoadPrefs();
 }
 
 function updateDeposit(){
@@ -258,6 +313,71 @@ function updateDeposit(){
 [dateIn,dateOut].forEach(el=>el.addEventListener("change",updateDeposit));
 
 /* =========================
+   PREFS LANGUE + OPT-IN
+========================= */
+async function savePrefs(){
+  const rawPhone = clientPhone.value || "";
+  const phone = normPhone(rawPhone);
+  const lang = (clientLang.value || "fr").toLowerCase();
+  const optin = !!waOptin.checked;
+
+  if(!phone){
+    prefsHint.textContent = "⚠️ Renseigne ton téléphone d’abord.";
+    return { ok:false };
+  }
+
+  // ⚠️ Table à ajuster si colonnes différentes :
+  // Ici: digiy_loc_contact_prefs(phone, lang, whatsapp_optin, updated_at)
+  const row = {
+    phone,
+    lang,
+    whatsapp_optin: optin,
+    updated_at: new Date().toISOString()
+  };
+
+  // Upsert basé sur phone (si tu as un unique index sur phone c'est parfait)
+  const { error } = await SB
+    .from("digiy_loc_contact_prefs")
+    .upsert([row], { onConflict: "phone" });
+
+  if(error){
+    console.error(error);
+    prefsHint.textContent = "❌ Impossible d’enregistrer (voir console).";
+    return { ok:false, error };
+  }
+
+  clientPhone.value = phone; // normalisé
+  prefsHint.textContent = optin
+    ? "✅ OK. Tu recevras les rappels WhatsApp dans ta langue."
+    : "✅ OK. Rappels WhatsApp désactivés.";
+
+  return { ok:true, phone, lang, optin };
+}
+
+async function tryLoadPrefs(){
+  const phone = normPhone(clientPhone.value || "");
+  if(!phone) return;
+
+  const { data, error } = await SB
+    .from("digiy_loc_contact_prefs")
+    .select("lang, whatsapp_optin")
+    .eq("phone", phone)
+    .maybeSingle();
+
+  if(error) return;
+
+  if(data){
+    if(data.lang) clientLang.value = String(data.lang).toLowerCase();
+    if(typeof data.whatsapp_optin === "boolean") waOptin.checked = data.whatsapp_optin;
+    prefsHint.textContent = "✅ Préférences chargées.";
+  }
+}
+
+btnSavePrefs.onclick = async ()=>{
+  await savePrefs();
+};
+
+/* =========================
    CONFIRM ACOMPTE
 ========================= */
 btnConfirm.onclick = async ()=>{
@@ -266,6 +386,14 @@ btnConfirm.onclick = async ()=>{
       note("Logement non chargé","bad");
       return;
     }
+
+    // ✅ on enregistre prefs avant tout (lang + opt-in)
+    const prefs = await savePrefs();
+    if(!prefs.ok){
+      note("Merci d’enregistrer d’abord votre téléphone / langue.","bad");
+      return;
+    }
+
     if(!waveRef.value.trim()){
       note("Référence Wave obligatoire","bad");
       return;
@@ -283,7 +411,9 @@ btnConfirm.onclick = async ()=>{
       listing_id: logement.id,
       owner_id: logement.owner_id,
       client_name: (clientName.value || "Client").trim(),
-      client_phone: (clientPhone.value || "").trim(),
+      client_phone: prefs.phone,
+      client_lang: prefs.lang,            // ✅ utile côté back-office / future MCP
+      whatsapp_optin: prefs.optin,        // ✅ utile
       date_in: dateIn.value,
       date_out: dateOut.value,
       amount_expected: amt,
@@ -303,7 +433,7 @@ btnConfirm.onclick = async ()=>{
       return;
     }
 
-    note("Acompte déclaré ✅ Le propriétaire va confirmer.","ok");
+    note("Acompte déclaré ✅ Le propriétaire va confirmer.\nSi vous avez activé WhatsApp, vous recevrez les rappels.","ok");
   }catch(e){
     console.error(e);
     note("Erreur technique (console)","bad");
