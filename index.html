@@ -159,7 +159,7 @@
     .filters{
       margin-top:14px;
       display:grid;
-      grid-template-columns:1.2fr 1fr auto auto;
+      grid-template-columns:1.25fr 1fr auto auto;
       gap:10px;
       position:relative;
       z-index:2;
@@ -227,6 +227,13 @@
 
     .name{font-size:22px;font-weight:950;color:var(--accent);line-height:1.1}
     .type{font-size:15px;color:#e5e7eb;font-weight:800}
+
+    .badges{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
     .badge{
       width:max-content;padding:5px 9px;font-size:12px;border-radius:999px;
       border:1px solid rgba(34,197,94,0.9);
@@ -235,6 +242,25 @@
       font-weight:950;
       white-space:nowrap;
     }
+    .badge.gold{
+      border-color:rgba(250,204,21,0.9);
+      color:var(--accent);
+    }
+    .badge.blue{
+      border-color:rgba(59,130,246,0.85);
+      color:#bfdbfe;
+    }
+    .badge.free{
+      border-color:rgba(34,197,94,0.95);
+      color:#bbf7d0;
+      background:rgba(6,78,59,0.65);
+    }
+    .badge.busy{
+      border-color:rgba(248,113,113,0.95);
+      color:#fecaca;
+      background:rgba(127,29,29,0.55);
+    }
+
     .desc{font-size:15px;color:#f3f4f6;line-height:1.6;font-weight:550}
     .meta{font-size:14px;color:#e5e7eb;font-weight:750;opacity:0.95}
 
@@ -275,6 +301,11 @@
       background:rgba(22,163,74,0.2);
       color:#bbf7d0;
       border:1px solid rgba(34,197,94,0.85);
+    }
+    .btn-ghost{
+      background:rgba(15,23,42,0.75);
+      color:#e5e7eb;
+      border:1px solid var(--line);
     }
 
     .bigmsg{
@@ -331,8 +362,8 @@
         <div class="hero-tags">
           <div class="hero-tag"><strong>Direct propriétaire</strong> — pas d’intermédiaire</div>
           <div class="hero-tag">Saly • Dakar • Mbour • Thiès</div>
-          <div class="hero-tag">Villa • Appartement • Studio</div>
           <div class="hero-tag">WhatsApp en 1 clic</div>
+          <div class="hero-tag"><strong>Live</strong> : dispo du jour</div>
         </div>
       </section>
 
@@ -380,87 +411,58 @@
     const grid = document.getElementById("grid");
 
     /* =========================
-       ASTOU (PHOTO + WHATSAPP OFFICIEL)
+       CONTACTS OFFICIELS
+    ========================= */
+    const TEAM_WA = "+221771342889";
+
+    /* =========================
+       ASTOU — PHOTO + WHATSAPP FORCÉS
     ========================= */
     const PHOTO_OVERRIDES_BY_SLUG = {
       "chez-astou-saly": "https://digiylyfe.com/wp-content/uploads/2025/06/042-BAPTISTE.png"
     };
-
     const WHATSAPP_OVERRIDES_BY_SLUG = {
       "chez-astou-saly": "+221778765785"
     };
 
     /* =========================
-       PLACEBOTS (garniture)
-       - jamais de faux numéro
-       - WhatsApp = équipe DIGIY
+       DISPONIBILITÉ — VIEW (ROYAL)
+       view: v_loc_pin_occupancy_today(pin_slug, is_occupied_today)
     ========================= */
-    const TEAM_WA = "+221771342889";
+    const OCCUPANCY_VIEW = "v_loc_pin_occupancy_today";
+
+    /* =========================
+       PLACEBOTS (garniture)
+    ========================= */
     const PLACEBOTS = [
-      {
-        title:"Zone Dakar — ouverture progressive",
-        slug:"zone-dakar-en-ouverture",
-        city:"Dakar",
-        kind:"Appartement • Studio",
-        price_per_night:null,
-        whatsapp:TEAM_WA,
+      { title:"Zone Dakar — ouverture progressive", slug:"zone-dakar-en-ouverture", address_label:"Dakar", kind:"Appartement • Studio", whatsapp:TEAM_WA,
         cover:"https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80",
         desc:"On ouvre quartier par quartier. Dis ta zone + budget, l’équipe te propose."
       },
-      {
-        title:"Zone Somone / Ngaparou — bons plans",
-        slug:"zone-somone-bons-plans",
-        city:"Somone",
-        kind:"Studio • Villa",
-        price_per_night:null,
-        whatsapp:TEAM_WA,
+      { title:"Zone Somone / Ngaparou — bons plans", slug:"zone-somone-bons-plans", address_label:"Somone", kind:"Studio • Villa", whatsapp:TEAM_WA,
         cover:"https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1400&q=80",
         desc:"Tu veux un bon plan ? Envoie dates + budget, on te guide."
       },
-      {
-        title:"Mbour — logements partenaires à venir",
-        slug:"zone-mbour-a-venir",
-        city:"Mbour",
-        kind:"Villa • Chambre",
-        price_per_night:null,
-        whatsapp:TEAM_WA,
+      { title:"Mbour — logements partenaires à venir", slug:"zone-mbour-a-venir", address_label:"Mbour", kind:"Villa • Chambre", whatsapp:TEAM_WA,
         cover:"https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1400&q=80",
         desc:"Tu cherches sur Mbour ? On active les proprios. Contacte-nous."
       },
-      {
-        title:"Thiès — ouverture en cours",
-        slug:"zone-thies-a-venir",
-        city:"Thiès",
-        kind:"Studio • Appartement",
-        price_per_night:null,
-        whatsapp:TEAM_WA,
+      { title:"Thiès — ouverture en cours", slug:"zone-thies-a-venir", address_label:"Thiès", kind:"Studio • Appartement", whatsapp:TEAM_WA,
         cover:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1400&q=80",
         desc:"Thiès arrive. Envoie ta zone, on te répond vite."
       },
-      {
-        title:"Toubab Dialaw — week-end & chill",
-        slug:"zone-toubab-dialaw-weekend",
-        city:"Toubab Dialaw",
-        kind:"Villa • Studio",
-        price_per_night:null,
-        whatsapp:TEAM_WA,
+      { title:"Toubab Dialaw — week-end & chill", slug:"zone-toubab-dialaw-weekend", address_label:"Toubab Dialaw", kind:"Villa • Studio", whatsapp:TEAM_WA,
         cover:"https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1400&q=80",
         desc:"Week-end au calme ? On te trouve une option selon ton budget."
       },
-      {
-        title:"Saly — nouveaux logements en cours",
-        slug:"zone-saly-en-ouverture",
-        city:"Saly",
-        kind:"Villa • Appartement • Studio",
-        price_per_night:null,
-        whatsapp:TEAM_WA,
+      { title:"Saly — nouveaux logements en cours", slug:"zone-saly-en-ouverture", address_label:"Saly", kind:"Villa • Appartement • Studio", whatsapp:TEAM_WA,
         cover:"https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=80",
-        desc:"Les nouveaux logements arrivent. Écris-nous pour être notifié dès qu’un nouveau logement est publié."
+        desc:"Les nouveaux logements arrivent. Écris-nous pour être notifié dès qu’un logement est publié."
       }
     ];
 
     /* =========================
-       Helpers
+       HELPERS
     ========================= */
     function openWa(phone, message){
       const txt = encodeURIComponent(message || "");
@@ -470,12 +472,6 @@
     }
 
     function norm(s){ return String(s || "").trim().toLowerCase(); }
-
-    function moneyXof(v){
-      const n = Number(v || 0);
-      if (!n) return "Prix à voir";
-      return n.toLocaleString("fr-FR") + " FCFA / nuit";
-    }
 
     function escapeHtml(str){
       return String(str ?? "")
@@ -509,35 +505,109 @@
       return merged;
     }
 
-    function cardTemplate(p){
+    function pickWhatsApp(row){
+      const slug = row.slug || "";
+      const forced = WHATSAPP_OVERRIDES_BY_SLUG[slug];
+      if (forced) return forced;
+
+      const wa = row.whatsapp || row.phone || "";
+      const digits = String(wa).replace(/\D/g, "");
+      if (digits.length >= 9) return wa;
+
+      return TEAM_WA; // jamais de bidon
+    }
+
+    function pickCover(row){
+      const slug = row.slug || "";
+      return (
+        PHOTO_OVERRIDES_BY_SLUG[slug] ||
+        row.cover ||
+        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80"
+      );
+    }
+
+    function computeKind(row){
+      // go_pins n'a pas "type", donc simple heuristique propre
+      const t = norm(row.title || "");
+      if (t.includes("villa")) return "Villa • Direct propriétaire";
+      if (t.includes("studio")) return "Studio • Direct propriétaire";
+      if (t.includes("appart")) return "Appartement • Direct propriétaire";
+      return "Location • Direct propriétaire";
+    }
+
+    function pinLink(slug){
+      if (!slug) return "https://beauville.github.io/digiy-loc-pro/";
+      return "https://beauville.github.io/digiy-loc-pro/go-pin.html?slug=" + encodeURIComponent(slug);
+    }
+
+    /* =========================
+       LOGGING (best-effort)
+       - optionnel, ne bloque jamais
+    ========================= */
+    async function logReservationIntent(pin){
+      try{
+        await sb.from("loc_reservation_requests").insert({
+          pin_slug: pin.slug || null,
+          logement_title: pin.title || null,
+          owner_phone: pickWhatsApp(pin) || null
+        });
+      }catch(e){
+        console.warn("[DIGIY LOC] logReservationIntent ignored:", e?.message || e);
+      }
+    }
+
+    async function reserveNow(pin){
+      const wa = pickWhatsApp(pin);
+      const title = pin.title || "ce logement";
+      const msg = `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`;
+      await logReservationIntent(pin);
+      openWa(wa, msg);
+    }
+
+    /* =========================
+       OCCUPANCY MAP (slug -> true/false)
+    ========================= */
+    async function fetchOccupancyToday(){
+      const { data, error } = await sb
+        .from(OCCUPANCY_VIEW)
+        .select("pin_slug,is_occupied_today");
+
+      if (error) {
+        console.warn("[DIGIY LOC] occupancy view error:", error.message);
+        return new Map();
+      }
+
+      const m = new Map();
+      (data || []).forEach(r=>{
+        if (r && r.pin_slug) m.set(String(r.pin_slug), !!r.is_occupied_today);
+      });
+      return m;
+    }
+
+    function cardTemplate(p, occMap){
       const title = p.title || "Logement";
       const slug  = p.slug || "";
-      const city  = p.city || p.address_label || "—";
-      const kind  = p.kind || "Location • Direct propriétaire";
+      const city  = p.address_label || "—";
+      const kind  = p.kind || computeKind(p);
+      const wa    = pickWhatsApp(p);
+      const cover = pickCover(p);
 
-      const wa =
-        WHATSAPP_OVERRIDES_BY_SLUG[slug] ||
-        p.whatsapp ||
-        p.phone ||
-        TEAM_WA; /* jamais un numéro bidon */
+      const isOccupied = occMap ? (occMap.get(slug) === true) : false;
 
-      const desc = p.desc || (p.partner_url
-        ? "Lien partenaire disponible. Contact direct propriétaire. 0% commission."
-        : "Contact direct propriétaire. 0% commission. Terrain clean."
+      const badges = [];
+      badges.push(`<div class="badge">0% com DIGIY</div>`);
+      badges.push(isOccupied
+        ? `<div class="badge busy">⛔ OCCUPÉ aujourd’hui</div>`
+        : `<div class="badge free">✅ DISPONIBLE</div>`
       );
 
-      const price = moneyXof(p.price_per_night || p.price || p.price_night);
+      if (p.partner_url) badges.push(`<div class="badge blue">Lien partenaire</div>`);
+      if (p.featured_rank != null) badges.push(`<div class="badge gold">⭐ Premium</div>`);
 
-      const cover =
-        PHOTO_OVERRIDES_BY_SLUG[slug] ||
-        p.cover ||
-        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
-
-      const goPinUrl = slug
-        ? ("https://beauville.github.io/digiy-loc-pro/go-pin.html?slug=" + encodeURIComponent(slug))
-        : (p.partner_url || "https://beauville.github.io/digiy-loc-pro/");
-
-      const waMsg = `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`;
+      const hasGeo = (p.lat != null && p.lng != null);
+      const mapsUrl = hasGeo
+        ? `https://www.google.com/maps?q=${encodeURIComponent(p.lat + "," + p.lng)}`
+        : "";
 
       return `
         <article class="card">
@@ -552,11 +622,13 @@
           <div class="name">${escapeHtml(title)}</div>
           <div class="type">${escapeHtml(kind)} • ${escapeHtml(city)}</div>
 
-          <div class="badge">0% com DIGIY</div>
+          <div class="badges">${badges.join("")}</div>
 
-          <p class="desc">${escapeHtml(desc)}</p>
+          <p class="desc">
+            Contact direct propriétaire. Paiement direct (Wave/espèces selon le logement). 0% commission.
+          </p>
 
-          <div class="meta">${escapeHtml(price)}</div>
+          <div class="meta">WhatsApp direct • Réponse rapide</div>
 
           <div class="contact">
             <div class="contact-title">Contact (WhatsApp)</div>
@@ -564,10 +636,27 @@
           </div>
 
           <div class="actions">
-            <a class="btn btn-primary" href="${goPinUrl}" target="_blank" rel="noopener noreferrer">👀 Voir le PIN</a>
-            <button class="btn btn-wa" type="button"
-              onclick="openWa('${escapeJs(wa)}','${escapeJs(waMsg)}')"
-            >💬 WhatsApp</button>
+            <a class="btn btn-primary" href="${pinLink(slug)}" target="_blank" rel="noopener noreferrer">👀 Voir le PIN</a>
+            <button class="btn btn-wa" type="button" onclick='reserveNow(${JSON.stringify({
+              slug: slug,
+              title: title,
+              whatsapp: p.whatsapp || "",
+              phone: p.phone || "",
+              address_label: city,
+              partner_url: p.partner_url || null,
+              featured_rank: p.featured_rank ?? null,
+              lat: p.lat ?? null,
+              lng: p.lng ?? null,
+              kind: kind
+            }).replace(/</g,"\\u003c")})'>📲 Réserver (WhatsApp)</button>
+          </div>
+
+          <div class="actions">
+            ${hasGeo
+              ? `<a class="btn btn-ghost" href="${mapsUrl}" target="_blank" rel="noopener noreferrer">🗺️ Voir sur la carte</a>`
+              : `<button class="btn btn-ghost" type="button" onclick="openWa('${escapeJs(TEAM_WA)}','${escapeJs("Bonjour DIGIY, je cherche une location à " + city + ".") }')">🤝 Aide DIGIY</button>`
+            }
+            <button class="btn btn-ghost" type="button" onclick="openWa('${escapeJs(TEAM_WA)}','${escapeJs("Bonjour DIGIY, je cherche une location à " + city + ".") }')">🤝 Aide DIGIY</button>
           </div>
         </article>
       `;
@@ -579,16 +668,18 @@
 
       return list.filter(p=>{
         const title = norm(p.title || "");
-        const city  = norm(p.city || p.address_label || "");
-        const k     = norm(p.kind || "");
+        const city  = norm(p.address_label || "");
+        const k     = norm(p.kind || computeKind(p));
 
         if (q && !(title.includes(q) || city.includes(q))) return false;
-        if (kind && k && !k.includes(kind)) return false;
-
+        if (kind && !k.includes(kind)) return false;
         return true;
       });
     }
 
+    /* =========================
+       FETCH go_pins (LOC)
+    ========================= */
     async function fetchLocPins(){
       const { data, error } = await sb
         .from("go_pins")
@@ -609,24 +700,24 @@
     async function render(){
       grid.innerHTML = `<div class="bigmsg">Chargement des logements…</div>`;
 
-      const res = await fetchLocPins();
-      if (!res.ok){
+      const [pinsRes, occMap] = await Promise.all([
+        fetchLocPins(),
+        fetchOccupancyToday()
+      ]);
+
+      if (!pinsRes.ok){
         grid.innerHTML = `
           <div class="bigmsg">
-            ❌ Erreur Supabase : <b>${escapeHtml(res.error || "inconnue")}</b><br>
+            ❌ Erreur Supabase : <b>${escapeHtml(pinsRes.error || "inconnue")}</b><br>
             👉 Si tu vois “Invalid API key”, c’est une clé/URL qui ne matchent pas.
           </div>
         `;
         return;
       }
 
-      const pins = res.rows.map(p => ({
+      const pins = pinsRes.rows.map(p => ({
         ...p,
-        city: p.address_label || "",
-        kind: "Location • Direct propriétaire",
-        desc: p.partner_url
-          ? "Lien partenaire disponible. Contact direct propriétaire. 0% commission."
-          : "Contact direct propriétaire. 0% commission. Terrain clean."
+        kind: computeKind(p)
       }));
 
       const merged = mergeNoDup(pins, PLACEBOTS, 9);
@@ -641,7 +732,7 @@
         return;
       }
 
-      grid.innerHTML = filtered.map(cardTemplate).join("");
+      grid.innerHTML = filtered.map(p => cardTemplate(p, occMap)).join("");
     }
 
     document.getElementById("btnSearch").addEventListener("click", render);
