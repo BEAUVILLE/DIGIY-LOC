@@ -159,7 +159,7 @@
     .filters{
       margin-top:14px;
       display:grid;
-      grid-template-columns:1.2fr 1fr 1fr auto auto;
+      grid-template-columns:1.2fr 1fr auto auto;
       gap:10px;
       position:relative;
       z-index:2;
@@ -354,7 +354,6 @@
           <option value="studio">Studio</option>
           <option value="chambre">Chambre</option>
         </select>
-        <input id="maxPrice" type="number" min="0" placeholder="Budget max / nuit (XOF)">
         <button id="btnSearch">🔎 Chercher</button>
         <button id="btnReset" class="ghost" type="button">↩︎ Reset</button>
       </section>
@@ -371,7 +370,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     /* =========================
-       SUPABASE (TES CLÉS)
+       SUPABASE
     ========================= */
     const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     const SUPABASE_ANON_KEY =
@@ -381,57 +380,50 @@
     const grid = document.getElementById("grid");
 
     /* =========================
-       PHOTO OVERRIDE (ASTOU)
-       -> Ici je "force" une belle photo sur la carte Chez Astou.
-       -> Si tu as ta vraie photo, remplace l’URL ci-dessous.
+       ASTOU (PHOTO + WHATSAPP OFFICIEL)
     ========================= */
     const PHOTO_OVERRIDES_BY_SLUG = {
-  "chez-astou-saly": "https://digiylyfe.com/wp-content/uploads/2025/06/042-BAPTISTE.png"
-};
+      "chez-astou-saly": "https://digiylyfe.com/wp-content/uploads/2025/06/042-BAPTISTE.png"
+    };
+
+    const WHATSAPP_OVERRIDES_BY_SLUG = {
+      "chez-astou-saly": "+221778765785"
+    };
 
     /* =========================
-       PLACEBOTS (pour garnir la page)
-       -> Utilisés seulement si on a peu de logements en base
-       -> Zéro doublon (on évite les slugs existants)
+       PLACEBOTS (garniture)
+       - jamais de faux numéro
+       - WhatsApp = équipe DIGIY
     ========================= */
+    const TEAM_WA = "+221771342889";
     const PLACEBOTS = [
-      {
-        title:"Zone Saly — nouveaux logements en cours",
-        slug:"zone-saly-en-ouverture",
-        city:"Saly",
-        kind:"villa • appartement • studio",
-        price_per_night:null,
-        whatsapp:"+221 77 134 28 89",
-        cover:"https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=80",
-        desc:"Les nouveaux logements arrivent. Écris-nous pour être notifié dès qu’un nouveau logement est publié."
-      },
       {
         title:"Zone Dakar — ouverture progressive",
         slug:"zone-dakar-en-ouverture",
         city:"Dakar",
-        kind:"appartement • studio",
+        kind:"Appartement • Studio",
         price_per_night:null,
-        whatsapp:"+221 77 134 28 89",
+        whatsapp:TEAM_WA,
         cover:"https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80",
-        desc:"On ouvre quartier par quartier. Dis ta zone + budget, on te propose."
+        desc:"On ouvre quartier par quartier. Dis ta zone + budget, l’équipe te propose."
       },
       {
         title:"Zone Somone / Ngaparou — bons plans",
         slug:"zone-somone-bons-plans",
         city:"Somone",
-        kind:"studio • villa",
+        kind:"Studio • Villa",
         price_per_night:null,
-        whatsapp:"+221 77 134 28 89",
+        whatsapp:TEAM_WA,
         cover:"https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1400&q=80",
-        desc:"Tu veux un bon plan ? Envoie dates + budget, l’équipe te guide."
+        desc:"Tu veux un bon plan ? Envoie dates + budget, on te guide."
       },
       {
         title:"Mbour — logements partenaires à venir",
         slug:"zone-mbour-a-venir",
         city:"Mbour",
-        kind:"villa • chambre",
+        kind:"Villa • Chambre",
         price_per_night:null,
-        whatsapp:"+221 77 134 28 89",
+        whatsapp:TEAM_WA,
         cover:"https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1400&q=80",
         desc:"Tu cherches sur Mbour ? On active les proprios. Contacte-nous."
       },
@@ -439,9 +431,9 @@
         title:"Thiès — ouverture en cours",
         slug:"zone-thies-a-venir",
         city:"Thiès",
-        kind:"studio • appartement",
+        kind:"Studio • Appartement",
         price_per_night:null,
-        whatsapp:"+221 77 134 28 89",
+        whatsapp:TEAM_WA,
         cover:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1400&q=80",
         desc:"Thiès arrive. Envoie ta zone, on te répond vite."
       },
@@ -449,11 +441,21 @@
         title:"Toubab Dialaw — week-end & chill",
         slug:"zone-toubab-dialaw-weekend",
         city:"Toubab Dialaw",
-        kind:"villa • studio",
+        kind:"Villa • Studio",
         price_per_night:null,
-        whatsapp:"+221 77 134 28 89",
+        whatsapp:TEAM_WA,
         cover:"https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1400&q=80",
         desc:"Week-end au calme ? On te trouve une option selon ton budget."
+      },
+      {
+        title:"Saly — nouveaux logements en cours",
+        slug:"zone-saly-en-ouverture",
+        city:"Saly",
+        kind:"Villa • Appartement • Studio",
+        price_per_night:null,
+        whatsapp:TEAM_WA,
+        cover:"https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=80",
+        desc:"Les nouveaux logements arrivent. Écris-nous pour être notifié dès qu’un nouveau logement est publié."
       }
     ];
 
@@ -493,83 +495,6 @@
         .replaceAll("\r"," ");
     }
 
-    function cardTemplate(p){
-      // go_pins columns: title, slug, category, phone, whatsapp, address_label, is_public, is_active, partner_url, featured_rank, lat/lng...
-      const title = p.title || "Logement";
-      const slug  = p.slug || "";
-      const city  = p.city || p.address_label || "—";
-
-      // On "fabrique" un type simple depuis category (tu peux enrichir plus tard)
-      const kind  = p.kind || "Location • Direct propriétaire";
-
-      const wa    = p.whatsapp || p.phone || "";
-      const desc  = p.desc || "Contact direct propriétaire. 0% commission. Terrain clean.";
-      const price = moneyXof(p.price_per_night || p.price || p.price_night);
-
-      // Photo: priority -> override Astou -> cover -> fallback
-      const cover =
-        PHOTO_OVERRIDES_BY_SLUG[slug] ||
-        p.cover ||
-        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
-
-      // Link: go-pin si slug, sinon partner_url si présent, sinon module
-      const goPinUrl = slug
-        ? ("https://beauville.github.io/digiy-loc-pro/go-pin.html?slug=" + encodeURIComponent(slug))
-        : (p.partner_url || "https://beauville.github.io/digiy-loc-pro/");
-
-      const waMsg = `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`;
-
-      return `
-        <article class="card">
-          <div class="photo">
-            <img alt="${escapeHtml(title)}" src="${escapeAttr(cover)}">
-          </div>
-
-          <div class="name">${escapeHtml(title)}</div>
-          <div class="type">${escapeHtml(kind)} • ${escapeHtml(city)}</div>
-
-          <div class="badge">0% com DIGIY</div>
-
-          <p class="desc">${escapeHtml(desc)}</p>
-
-          <div class="meta">${escapeHtml(price)}</div>
-
-          <div class="contact">
-            <div class="contact-title">Contact (WhatsApp)</div>
-            <div class="contact-value">${escapeHtml(wa || "+221 77 134 28 89")}</div>
-          </div>
-
-          <div class="actions">
-            <a class="btn btn-primary" href="${goPinUrl}" target="_blank" rel="noopener noreferrer">👀 Voir le PIN</a>
-            <button class="btn btn-wa" type="button"
-              onclick="openWa('${escapeJs(wa || "+221 77 134 28 89")}','${escapeJs(waMsg)}')"
-            >💬 WhatsApp</button>
-          </div>
-        </article>
-      `;
-    }
-
-    function applyFilters(list){
-      const q = norm(document.getElementById("q").value);
-      const kind = norm(document.getElementById("kind").value);
-      const maxPrice = Number(document.getElementById("maxPrice").value || 0);
-
-      return list.filter(p=>{
-        const title = norm(p.title || "");
-        const city  = norm(p.city || p.address_label || "");
-        const k     = norm(p.kind || "");
-
-        // prix si un jour tu ajoutes un champ (sinon 0 => ignore)
-        const price = Number(p.price_per_night || p.price || p.price_night || 0);
-
-        if (q && !(title.includes(q) || city.includes(q))) return false;
-        if (kind && k && !k.includes(kind)) return false;
-        if (maxPrice && price && price > maxPrice) return false;
-
-        return true;
-      });
-    }
-
     function mergeNoDup(baseList, fillers, targetCount){
       const merged = [...baseList];
       const seen = new Set(baseList.map(x => String(x.slug || "").toLowerCase()).filter(Boolean));
@@ -584,8 +509,87 @@
       return merged;
     }
 
+    function cardTemplate(p){
+      const title = p.title || "Logement";
+      const slug  = p.slug || "";
+      const city  = p.city || p.address_label || "—";
+      const kind  = p.kind || "Location • Direct propriétaire";
+
+      const wa =
+        WHATSAPP_OVERRIDES_BY_SLUG[slug] ||
+        p.whatsapp ||
+        p.phone ||
+        TEAM_WA; /* jamais un numéro bidon */
+
+      const desc = p.desc || (p.partner_url
+        ? "Lien partenaire disponible. Contact direct propriétaire. 0% commission."
+        : "Contact direct propriétaire. 0% commission. Terrain clean."
+      );
+
+      const price = moneyXof(p.price_per_night || p.price || p.price_night);
+
+      const cover =
+        PHOTO_OVERRIDES_BY_SLUG[slug] ||
+        p.cover ||
+        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
+
+      const goPinUrl = slug
+        ? ("https://beauville.github.io/digiy-loc-pro/go-pin.html?slug=" + encodeURIComponent(slug))
+        : (p.partner_url || "https://beauville.github.io/digiy-loc-pro/");
+
+      const waMsg = `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`;
+
+      return `
+        <article class="card">
+          <div class="photo">
+            <img
+              alt="${escapeHtml(title)}"
+              src="${escapeAttr(cover)}"
+              onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80';"
+            >
+          </div>
+
+          <div class="name">${escapeHtml(title)}</div>
+          <div class="type">${escapeHtml(kind)} • ${escapeHtml(city)}</div>
+
+          <div class="badge">0% com DIGIY</div>
+
+          <p class="desc">${escapeHtml(desc)}</p>
+
+          <div class="meta">${escapeHtml(price)}</div>
+
+          <div class="contact">
+            <div class="contact-title">Contact (WhatsApp)</div>
+            <div class="contact-value">${escapeHtml(wa)}</div>
+          </div>
+
+          <div class="actions">
+            <a class="btn btn-primary" href="${goPinUrl}" target="_blank" rel="noopener noreferrer">👀 Voir le PIN</a>
+            <button class="btn btn-wa" type="button"
+              onclick="openWa('${escapeJs(wa)}','${escapeJs(waMsg)}')"
+            >💬 WhatsApp</button>
+          </div>
+        </article>
+      `;
+    }
+
+    function applyFilters(list){
+      const q = norm(document.getElementById("q").value);
+      const kind = norm(document.getElementById("kind").value);
+
+      return list.filter(p=>{
+        const title = norm(p.title || "");
+        const city  = norm(p.city || p.address_label || "");
+        const k     = norm(p.kind || "");
+
+        if (q && !(title.includes(q) || city.includes(q))) return false;
+        if (kind && k && !k.includes(kind)) return false;
+
+        return true;
+      });
+    }
+
     async function fetchLocPins(){
-      // ✅ IMPORTANT: sur ta table go_pins, c’est category=loc (pas module)
       const { data, error } = await sb
         .from("go_pins")
         .select("*")
@@ -610,24 +614,23 @@
         grid.innerHTML = `
           <div class="bigmsg">
             ❌ Erreur Supabase : <b>${escapeHtml(res.error || "inconnue")}</b><br>
-            👉 Si tu vois encore “Invalid API key”, c’est une clé/URL qui ne matche pas.
+            👉 Si tu vois “Invalid API key”, c’est une clé/URL qui ne matchent pas.
           </div>
         `;
         return;
       }
 
-      // On transforme légèrement les lignes go_pins en “cards” plus riches
       const pins = res.rows.map(p => ({
         ...p,
         city: p.address_label || "",
         kind: "Location • Direct propriétaire",
-        desc: p.partner_url ? "Lien partenaire disponible. Contact direct propriétaire. 0% commission." : "Contact direct propriétaire. 0% commission. Terrain clean."
+        desc: p.partner_url
+          ? "Lien partenaire disponible. Contact direct propriétaire. 0% commission."
+          : "Contact direct propriétaire. 0% commission. Terrain clean."
       }));
 
-      // ✅ On “garnit” la page jusqu’à 9 cards (placebots) sans doublon
-      const base = mergeNoDup(pins, PLACEBOTS, 9);
-
-      const filtered = applyFilters(base);
+      const merged = mergeNoDup(pins, PLACEBOTS, 9);
+      const filtered = applyFilters(merged);
 
       if (!filtered.length){
         grid.innerHTML = `
@@ -645,11 +648,10 @@
     document.getElementById("btnReset").addEventListener("click", ()=>{
       document.getElementById("q").value = "";
       document.getElementById("kind").value = "";
-      document.getElementById("maxPrice").value = "";
       render();
     });
 
-    ["q","maxPrice"].forEach(id=>{
+    ["q"].forEach(id=>{
       document.getElementById(id).addEventListener("keydown",(e)=>{
         if (e.key === "Enter") render();
       });
