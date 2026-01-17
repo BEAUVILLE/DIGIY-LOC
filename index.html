@@ -105,6 +105,30 @@
       grid-template-columns:repeat(3, minmax(0,1fr));
       gap:12px;
     }
+
+    /* ===== TOP 10 VITRINE ===== */
+    .sectionTitle{
+      margin:14px 0 10px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    }
+    .sectionTitle h2{
+      font-size:15px;
+      font-weight:950;
+      letter-spacing:.2px;
+      color:rgba(229,231,235,.95);
+      display:flex;align-items:center;gap:8px;
+    }
+    .sectionTitle .note{
+      color:rgba(229,231,235,.75);
+      font-size:12.5px;
+    }
+    .top10{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:12px;
+    }
+
     .pin{
       border:1px solid rgba(148,163,184,.18);
       background:rgba(2,44,34,.25);
@@ -171,6 +195,25 @@
       padding:8px 10px;border-radius:12px;
       border:1px solid rgba(250,204,21,.35);
       background:rgba(250,204,21,.08);
+    }
+
+    /* petit bouton partner */
+    .partnerRow{
+      margin-top:10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      font-size:12.5px;
+      color:rgba(229,231,235,.85);
+    }
+    .partnerBtn{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:7px 10px;border-radius:12px;
+      border:1px solid rgba(34,197,94,.35);
+      background:rgba(34,197,94,.10);
+      font-weight:900;
+      white-space:nowrap;
     }
 
     .state{
@@ -264,6 +307,7 @@
       .search .field:nth-child(4){grid-column:1/2}
       .search .field:nth-child(5){grid-column:2/4}
       .grid{grid-template-columns:repeat(2, minmax(0,1fr))}
+      .top10{grid-template-columns:repeat(2, minmax(0,1fr))}
       .showcase{grid-template-columns:1fr}
     }
     @media (max-width: 620px){
@@ -271,6 +315,7 @@
       .search{grid-template-columns:1fr}
       .btn{width:100%}
       .grid{grid-template-columns:1fr}
+      .top10{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -299,10 +344,11 @@
         <div class="showTag">⭐ Vitrine du jour</div>
         <div class="showTitle">Chez Astou — “propre, simple, accueil royal”</div>
         <div class="showTxt">
-          Exemple de fiche PIN en vitrine. Tu cliques, tu vois direct : photos, prix, contact, et la vibe.
+          Exemple de fiche en vitrine. Tu cliques, tu vois direct : photos, prix, contact, et la vibe.
         </div>
         <div class="showActions">
-          <a class="showBtn" id="demoAstou" href="go-pin-public.html?slug=chez-astou">👀 Voir “Chez Astou”</a>
+          <!-- ✅ lien public -> go-pin.html -->
+          <a class="showBtn" id="demoAstou" href="go-pin.html?slug=chez-astou-saly">👀 Voir “Chez Astou”</a>
           <button class="showBtn ghost" id="btnFocusSearch">🔎 Je cherche ma zone</button>
         </div>
         <div class="showMini">💡 Astuce : écris une zone (Saly, Almadies…) et laisse DIGIY LOC te guider.</div>
@@ -325,6 +371,13 @@
         </div>
       </div>
     </div>
+
+    <!-- ✅ TOP 10 (premiers inscrits) -->
+    <div class="sectionTitle">
+      <h2>🏆 Les 10 premiers inscrits (vitrine)</h2>
+      <div class="note">Ils passent devant — c’est la règle du terrain.</div>
+    </div>
+    <div id="top10" class="top10"></div>
 
     <div class="card">
       <div class="search">
@@ -361,7 +414,7 @@
       <div class="row">
         <div class="chips">
           <span class="chip">📍 Basé sur <b>go_pins</b></span>
-          <span class="chip">🔗 Carte → <b>go-pin-public.html</b>?slug=…</span>
+          <span class="chip">🔗 Carte → <b>go-pin.html</b>?slug=…</span>
           <span class="chip">🔒 Cockpit privé (inchangé)</span>
         </div>
         <div id="countTxt">—</div>
@@ -379,14 +432,15 @@
     /* =========================
        DIGIY LOC — INDEX (PUBLIC)
        Source: go_pins
-       Chaque carte -> go-pin-public.html?slug=...
+       Top 10 = premiers inscrits (created_at asc)
+       Cartes -> go-pin.html?slug=...
        Aucun refactor cockpit
     ========================== */
 
     /* 🔐 SUPABASE — DÉJÀ POSÉ */
     const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     const SUPABASE_ANON_KEY =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2i";
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -397,6 +451,7 @@
     const elMaxPrice = document.getElementById("maxPrice");
     const btn = document.getElementById("btnSearch");
     const grid = document.getElementById("grid");
+    const top10 = document.getElementById("top10");
     const state = document.getElementById("state");
     const countTxt = document.getElementById("countTxt");
 
@@ -421,6 +476,11 @@
       catch { return String(x) + " FCFA"; }
     };
 
+    const num = (v) => {
+      const x = Number(v);
+      return Number.isFinite(x) ? x : 0;
+    };
+
     function showState(kind, title, msg) {
       state.style.display = "block";
       const icon = kind === "loading" ? `<span class="spin"></span>` : (kind === "error" ? "⚠️" : "ℹ️");
@@ -431,8 +491,21 @@
     }
     function hideState(){ state.style.display = "none"; state.innerHTML = ""; }
 
-    function pinCard(p){
-      // Champs flex: adapte si tu as d’autres noms
+    // ✅ partner url tolérant (n’explose pas si colonne absente)
+    function getPartnerUrl(p){
+      const u =
+        p.partner_url ||
+        p.partner_link ||
+        p.partner_page ||
+        p.fiche_url ||
+        p.fiche_partenaire_url ||
+        p.wp_url ||
+        p.website ||
+        "";
+      return (u && typeof u === "string") ? u.trim() : "";
+    }
+
+    function pinCard(p, rankLabel){
       const slug = p.slug ?? p.pin_slug ?? p.code ?? "";
       const title = p.title ?? p.name ?? p.label ?? "Location";
       const city = p.city ?? p.ville ?? "";
@@ -440,12 +513,16 @@
       const kind = p.kind ?? p.type ?? "";
       const guests = p.guests ?? p.max_guests ?? p.capacity ?? null;
       const bedrooms = p.bedrooms ?? p.rooms ?? p.chambres ?? null;
-      const price = p.price_per_night ?? p.night_price ?? p.price ?? p.prix ?? null;
-      const cover = p.cover_url ?? p.cover ?? p.image_url ?? p.photo_url ?? "";
+
+      // Prix nuit (tolérant)
+      const price = p.price_per_night ?? p.night_price ?? p.price_night ?? p.price ?? p.prix ?? null;
+
+      // Cover (tolérant)
+      const cover = p.cover_url ?? p.cover ?? p.image_url ?? p.photo_url ?? p.photo ?? "";
 
       const place = [area, city].filter(Boolean).join(" • ");
-      const ribbon = kind ? esc(kind) : "Disponible";
-      const href = slug ? `go-pin-public.html?slug=${encodeURIComponent(slug)}` : `go-pin-public.html`;
+      const ribbonTxt = rankLabel ? `🏆 ${rankLabel}` : (kind ? kind : "Disponible");
+      const href = slug ? `go-pin.html?slug=${encodeURIComponent(slug)}` : `go-pin.html`;
 
       const kpis = [];
       if (Number.isFinite(Number(bedrooms)) && Number(bedrooms) > 0) kpis.push(`🛏️ ${Number(bedrooms)} ch.`);
@@ -454,11 +531,16 @@
 
       const priceTxt = fmtFCFA(price);
 
+      const partnerUrl = getPartnerUrl(p);
+      const partnerBtn = partnerUrl
+        ? `<a class="partnerBtn" href="${esc(partnerUrl)}" target="_blank" rel="noopener">🎥 Fiche complète</a>`
+        : `<span style="color:rgba(229,231,235,.72)">Fiche partenaire : bientôt</span>`;
+
       return `
         <a class="pin" href="${href}">
           <div class="cover">
             ${cover ? `<img src="${esc(cover)}" alt="${esc(title)}" loading="lazy" />` : ``}
-            <div class="ribbon">✨ ${ribbon}</div>
+            <div class="ribbon">✨ ${esc(ribbonTxt)}</div>
           </div>
           <div class="content">
             <div class="title">${esc(title)}</div>
@@ -471,13 +553,60 @@
               ${kpis.slice(0,3).map(x => `<span class="kpi">${esc(x)}</span>`).join("")}
             </div>
 
-            <div class="cta">
-              <span>Ouvre la fiche →</span>
+            <div class="partnerRow">
+              ${partnerBtn}
               <span class="go">Voir le PIN ⟶</span>
             </div>
           </div>
         </a>
       `;
+    }
+
+    // ✅ Top10 = created_at ASC (premiers inscrits)
+    async function loadTop10(){
+      top10.innerHTML = "";
+
+      // On tente created_at, sinon fallback updated_at
+      let { data, error } = await sb
+        .from("go_pins")
+        .select("*")
+        .order("created_at", { ascending: true })
+        .limit(10);
+
+      if (error){
+        const res2 = await sb
+          .from("go_pins")
+          .select("*")
+          .order("updated_at", { ascending: true })
+          .limit(10);
+
+        data = res2.data || [];
+        error = res2.error;
+      }
+
+      if (error){
+        console.error(error);
+        top10.innerHTML = `
+          <div class="state" style="grid-column:1/-1">
+            <div style="font-weight:950">⚠️ Vitrine Top 10 indisponible</div>
+            <p class="small">Le public n’arrive pas à lire go_pins. Vérifie la RLS, puis recharge.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const arr = data || [];
+      if (!arr.length){
+        top10.innerHTML = `
+          <div class="state" style="grid-column:1/-1">
+            <div style="font-weight:950">ℹ️ Pas encore de fiches</div>
+            <p class="small">Dès que les proprios s’inscrivent, ils sortent ici automatiquement.</p>
+          </div>
+        `;
+        return;
+      }
+
+      top10.innerHTML = arr.map((p, i) => pinCard(p, `Top ${i+1}`)).join("");
     }
 
     async function fetchPins(){
@@ -487,7 +616,7 @@
 
       const q = (elQ.value || "").trim().toLowerCase();
       const kind = (elKind.value || "").trim().toLowerCase();
-      const guests = Number(elGuests.value || 0);
+      const guestsNeed = Number(elGuests.value || 0);
       const maxPrice = Number(elMaxPrice.value || 0);
 
       showState("loading", "On cherche…", "On te ramène les meilleures options du coin.");
@@ -521,6 +650,7 @@
 
       const { data, error } = await query;
 
+      let list = data || [];
       if (error){
         // Fallback: sans OR (au cas où des colonnes n’existent pas)
         const { data: data2, error: error2 } = await sb
@@ -534,33 +664,24 @@
           console.error(error2);
           return;
         }
-
-        const filtered = (data2 || []).filter(p => {
-          const txt = `${p.title||""} ${p.name||""} ${p.city||""} ${p.ville||""} ${p.area||""} ${p.zone||""} ${p.neighborhood||""} ${p.slug||""}`.toLowerCase();
-          if (q && !txt.includes(q)) return false;
-
-          const k = (p.kind ?? p.type ?? "").toString().toLowerCase();
-          if (kind && k && k !== kind) return false;
-
-          const g = Number(p.guests ?? p.max_guests ?? p.capacity ?? 0);
-          if (Number.isFinite(guests) && guests > 0 && Number.isFinite(g) && g > 0 && g < guests) return false;
-
-          const price = Number(p.price_per_night ?? p.night_price ?? p.price ?? p.prix ?? 0);
-          if (Number.isFinite(maxPrice) && maxPrice > 0 && Number.isFinite(price) && price > 0 && price > maxPrice) return false;
-
-          return true;
-        });
-
-        renderPins(filtered);
-        return;
+        list = data2 || [];
       }
 
-      const filtered = (data || []).filter(p => {
-        const g = Number(p.guests ?? p.max_guests ?? p.capacity ?? 0);
-        if (Number.isFinite(guests) && guests > 0 && Number.isFinite(g) && g > 0 && g < guests) return false;
+      // Filtrage JS (safe)
+      const filtered = (list || []).filter(p => {
+        if (q){
+          const txt = `${p.title||""} ${p.name||""} ${p.city||""} ${p.ville||""} ${p.area||""} ${p.zone||""} ${p.neighborhood||""} ${p.slug||""}`.toLowerCase();
+          if (!txt.includes(q)) return false;
+        }
 
-        const price = Number(p.price_per_night ?? p.night_price ?? p.price ?? p.prix ?? 0);
-        if (Number.isFinite(maxPrice) && maxPrice > 0 && Number.isFinite(price) && price > 0 && price > maxPrice) return false;
+        const k = (p.kind ?? p.type ?? "").toString().toLowerCase();
+        if (kind && k && k !== kind) return false;
+
+        const g = num(p.guests ?? p.max_guests ?? p.capacity ?? 0);
+        if (Number.isFinite(guestsNeed) && guestsNeed > 0 && g > 0 && g < guestsNeed) return false;
+
+        const price = num(p.price_per_night ?? p.night_price ?? p.price_night ?? p.price ?? p.prix ?? 0);
+        if (Number.isFinite(maxPrice) && maxPrice > 0 && price > 0 && price > maxPrice) return false;
 
         return true;
       });
@@ -579,7 +700,7 @@
         return;
       }
 
-      grid.innerHTML = arr.map(pinCard).join("");
+      grid.innerHTML = arr.map(p => pinCard(p, "")).join("");
     }
 
     // UX: Enter = search
@@ -589,7 +710,10 @@
     btn.addEventListener("click", fetchPins);
 
     // Auto-load
-    fetchPins();
+    (async () => {
+      await loadTop10();
+      await fetchPins();
+    })();
   </script>
 </body>
 </html>
