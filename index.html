@@ -1,359 +1,595 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<title>DIGIY LOC — Locations direct propriétaire</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Locations direct propriétaire. 0% commission. Paiement direct. DIGIY LOC.">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#052e16" />
+  <title>DIGIY LOC ♾️ — Trouve ta location</title>
+  <meta name="description" content="DIGIY LOC — Trouve une location en 30 secondes. Paiement direct. 0% commission." />
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{
+      --bg:#022c22;--bg2:#065f46;--card:#062a18;
+      --accent:#facc15;--text:#e5e7eb;--muted:#9ca3af;
+      --danger:#fb7185;--ok:#22c55e;--line:rgba(148,163,184,.22);
+      --glass:rgba(2,44,34,.35);
+      --shadow:0 14px 40px rgba(0,0,0,.35);
+      --r:18px;
+      --max:1120px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top,#16a34a22 0,transparent 55%),
+        radial-gradient(circle at 15% 85%, rgba(250,204,21,.14) 0, transparent 55%),
+        linear-gradient(135deg,var(--bg),var(--bg2));
+      padding:18px 14px 42px;
+    }
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:var(--max);margin:0 auto}
+    .top{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+      margin:10px 0 14px;
+    }
+    .brand{display:flex;flex-direction:column;gap:6px}
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 12px;border:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+      border-radius:999px;
+      width:max-content;
+      box-shadow:0 10px 25px rgba(0,0,0,.18);
+    }
+    .dot{width:10px;height:10px;border-radius:999px;background:var(--accent);box-shadow:0 0 18px rgba(250,204,21,.35)}
+    h1{font-size:22px;letter-spacing:.2px}
+    .sub{color:var(--muted);font-size:13.5px;line-height:1.35;max-width:720px}
+    .hint{margin-top:6px;color:rgba(229,231,235,.9);font-size:13px}
+    .hint b{color:var(--accent)}
 
-<style>
-:root{
-  --bg:#020617;
-  --bg2:#0b1020;
-  --card:#0b1220;
-  --line:#1f2937;
-  --ink:#f9fafb;
-  --muted:#cbd5f5;
-  --gold:#facc15;
-  --gold2:#f97316;
-  --green:#22c55e;
-  --shadow:0 22px 55px rgba(0,0,0,.55);
-}
-*{box-sizing:border-box}
-body{
-  margin:0; color:var(--ink);
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-  background:
-    radial-gradient(900px 520px at 10% -10%, rgba(250,204,21,.16), transparent 60%),
-    radial-gradient(900px 520px at 90% 0%, rgba(34,197,94,.12), transparent 60%),
-    linear-gradient(180deg, var(--bg2), var(--bg));
-}
-.wrap{max-width:1120px;margin:0 auto;padding:14px}
-a{color:inherit;text-decoration:none}
+    .card{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .search{
+      padding:14px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr .8fr .7fr auto;
+      gap:10px;
+      align-items:end;
+    }
+    .field{display:flex;flex-direction:column;gap:6px}
+    label{font-size:12px;color:rgba(229,231,235,.85)}
+    input, select{
+      width:100%;
+      padding:11px 12px;
+      border-radius:14px;
+      border:1px solid rgba(148,163,184,.25);
+      background:rgba(2,44,34,.38);
+      color:var(--text);
+      outline:none;
+    }
+    input::placeholder{color:rgba(156,163,175,.9)}
+    .btn{
+      padding:11px 14px;border-radius:14px;border:1px solid rgba(250,204,21,.45);
+      background:linear-gradient(180deg, rgba(250,204,21,.22), rgba(250,204,21,.08));
+      color:var(--text);
+      font-weight:900;
+      cursor:pointer;
+      transition:transform .08s ease, filter .12s ease;
+      height:44px;
+    }
+    .btn:hover{filter:brightness(1.08)}
+    .btn:active{transform:translateY(1px)}
+    .row{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:10px 14px;border-top:1px solid var(--line);
+      color:var(--muted);font-size:13px;
+    }
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      border:1px solid rgba(148,163,184,.22);
+      background:rgba(2,44,34,.26);
+      padding:6px 10px;border-radius:999px;
+      font-size:12.5px;color:rgba(229,231,235,.9);
+    }
 
-.top{
-  display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;
-  padding:12px 12px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);
-  box-shadow:var(--shadow);
-}
-.brand{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.logo{
-  width:42px;height:42px;border-radius:14px;
-  background:linear-gradient(135deg, rgba(250,204,21,.35), rgba(34,197,94,.2));
-  border:1px solid rgba(250,204,21,.35);
-  box-shadow:0 0 22px rgba(250,204,21,.12);
-}
-h1{margin:0;font-size:1.2rem}
-.sub{color:var(--muted);font-weight:850;font-size:.95rem;margin-top:2px}
-.btnRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.btn{
-  border:0; cursor:pointer;
-  border-radius:14px;
-  padding:11px 12px;
-  font-weight:1000;
-  background:rgba(255,255,255,.03);
-  border:1px solid var(--line);
-  color:var(--muted);
-}
-.btn:hover{filter:brightness(1.08)}
-.btn.primary{background:var(--green);border-color:rgba(34,197,94,.25);color:#022c22}
-.btn.gold{background:rgba(250,204,21,.14);border-color:rgba(250,204,21,.35);color:#fde68a}
+    .grid{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:12px;
+    }
+    .pin{
+      border:1px solid rgba(148,163,184,.18);
+      background:rgba(2,44,34,.25);
+      border-radius:18px;
+      overflow:hidden;
+      transition:transform .12s ease, border-color .12s ease, filter .12s ease;
+      min-height:285px;
+    }
+    .pin:hover{transform:translateY(-2px);border-color:rgba(250,204,21,.35);filter:brightness(1.03)}
+    .cover{
+      height:145px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(250,204,21,.15), transparent 45%),
+        linear-gradient(135deg, rgba(34,197,94,.22), rgba(2,44,34,.35));
+      position:relative;
+    }
+    .cover img{
+      width:100%;height:100%;object-fit:cover;display:block;
+      filter:saturate(1.05) contrast(1.02);
+    }
+    .ribbon{
+      position:absolute;left:10px;top:10px;
+      display:inline-flex;align-items:center;gap:6px;
+      padding:7px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(2,44,34,.45);
+      backdrop-filter: blur(8px);
+      font-size:12px;color:rgba(229,231,235,.95);
+    }
+    .content{padding:12px 12px 12px}
+    .title{
+      font-size:15px;font-weight:950;letter-spacing:.2px;
+      line-height:1.25;
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+      margin-bottom:8px;
+    }
+    .meta{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      color:rgba(229,231,235,.9);
+      font-size:13px;
+    }
+    .place{color:var(--muted);font-size:12.5px;margin-top:4px}
+    .kpis{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .kpi{
+      font-size:12px;color:rgba(229,231,235,.9);
+      border:1px solid rgba(148,163,184,.18);
+      background:rgba(2,44,34,.22);
+      padding:6px 9px;border-radius:999px;
+    }
+    .price{
+      font-weight:950;color:var(--accent);
+      letter-spacing:.2px;
+      white-space:nowrap;
+    }
+    .cta{
+      margin-top:10px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      color:rgba(229,231,235,.85);
+      font-size:12.5px;
+    }
+    .go{
+      display:inline-flex;align-items:center;gap:8px;
+      font-weight:950;
+      padding:8px 10px;border-radius:12px;
+      border:1px solid rgba(250,204,21,.35);
+      background:rgba(250,204,21,.08);
+    }
 
-.filters{
-  margin-top:14px;
-  padding:12px;
-  border:1px solid var(--line);
-  border-radius:18px;
-  background:rgba(255,255,255,.03);
-  box-shadow:var(--shadow);
-  display:grid;
-  grid-template-columns: 1.2fr .8fr auto;
-  gap:10px;
-  align-items:end;
-}
-@media(max-width:840px){
-  .filters{grid-template-columns:1fr}
-}
-label{display:block;font-size:.88rem;font-weight:950;color:#fff;margin:6px 0 6px}
-input, select{
-  width:100%;
-  border-radius:14px;
-  border:1px solid var(--line);
-  background:rgba(0,0,0,.18);
-  color:var(--ink);
-  padding:11px 12px;
-  font-weight:850;
-  outline:none;
-}
-.note{
-  margin-top:12px;
-  padding:10px 12px;border-radius:14px;
-  border:1px solid rgba(148,163,184,.25);
-  background:rgba(255,255,255,.03);
-  color:var(--muted);
-  white-space:pre-wrap;
-}
-.note.ok{border-color:rgba(34,197,94,.35);color:#bbf7d0;background:rgba(34,197,94,.09)}
-.note.bad{border-color:rgba(239,68,68,.35);color:#fecaca;background:rgba(239,68,68,.09)}
+    .state{
+      margin-top:14px;
+      border:1px dashed rgba(148,163,184,.30);
+      background:rgba(2,44,34,.18);
+      border-radius:18px;
+      padding:16px;
+      color:rgba(229,231,235,.92);
+    }
+    .state p{color:var(--muted);margin-top:6px;line-height:1.4}
+    .small{font-size:12.5px}
+    .loader{
+      display:inline-flex;align-items:center;gap:10px;
+      color:rgba(229,231,235,.92);
+    }
+    .spin{
+      width:18px;height:18px;border-radius:999px;
+      border:2px solid rgba(229,231,235,.25);
+      border-top-color:var(--accent);
+      animation:rot .8s linear infinite;
+    }
+    @keyframes rot{to{transform:rotate(360deg)}}
 
-.grid{
-  margin-top:14px;
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:14px;
-}
-.card{
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.03);
-  border-radius:20px;
-  box-shadow:var(--shadow);
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-}
-..thumb{
-  width:100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  object-position: center center;
-  background:#020617;
-}
+    /* ===== VITRINE CHAUDE (terrain) ===== */
+    .showcase{
+      margin:14px 0 14px;
+      border:1px solid var(--line);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(250,204,21,.16), transparent 52%),
+        radial-gradient(circle at 80% 20%, rgba(34,197,94,.18), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border-radius:22px;
+      padding:16px;
+      display:grid;
+      grid-template-columns: 1.35fr .65fr;
+      gap:12px;
+      box-shadow:var(--shadow);
+    }
+    .showTag{
+      display:inline-flex;align-items:center;
+      padding:7px 10px;border-radius:999px;
+      border:1px solid rgba(250,204,21,.35);
+      background:rgba(250,204,21,.10);
+      width:max-content;
+      font-size:12.5px;font-weight:950;color:rgba(229,231,235,.95);
+    }
+    .showTitle{margin-top:10px;font-size:18px;font-weight:950;letter-spacing:.2px}
+    .showTxt{margin-top:6px;color:rgba(229,231,235,.88);line-height:1.35;max-width:720px}
+    .showMini{margin-top:10px;color:rgba(229,231,235,.75);font-size:12.5px}
+    .showActions{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
+    .showBtn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(250,204,21,.45);
+      background:linear-gradient(180deg, rgba(250,204,21,.22), rgba(250,204,21,.08));
+      font-weight:950;
+      cursor:pointer;
+    }
+    .showBtn.ghost{
+      border:1px solid rgba(148,163,184,.25);
+      background:rgba(2,44,34,.28);
+      font-weight:900;
+      color:rgba(229,231,235,.92);
+    }
+    .showCard{
+      height:100%;
+      border:1px solid rgba(148,163,184,.18);
+      background:rgba(2,44,34,.22);
+      border-radius:18px;
+      padding:12px;
+      display:flex;flex-direction:column;justify-content:space-between;
+      overflow:hidden;
+    }
+    .showCardTop{display:flex;gap:8px;flex-wrap:wrap}
+    .miniPill{
+      font-size:12px;
+      border:1px solid rgba(148,163,184,.18);
+      background:rgba(2,44,34,.22);
+      padding:6px 9px;border-radius:999px;
+      color:rgba(229,231,235,.9);
+    }
+    .showCardMid{text-align:left}
+    .bigPrice{font-size:24px;font-weight:950;color:var(--accent);letter-spacing:.2px}
+    .miniTxt{margin-top:2px;color:rgba(229,231,235,.75);font-size:12.5px}
+    .showCardBot{display:flex;flex-direction:column;gap:6px;color:rgba(229,231,235,.8);font-size:12.5px}
+    .miniLine{opacity:.95}
 
-.cardBody{padding:12px}
-.title{
-  font-size:1.08rem;
-  font-weight:1100;
-  margin:0;
-}
-.meta{color:var(--muted);font-weight:850;font-size:.93rem;margin-top:6px}
-.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.badge{
-  border:1px solid rgba(148,163,184,.25);
-  background:rgba(255,255,255,.02);
-  color:var(--muted);
-  font-weight:950;
-  font-size:.82rem;
-  padding:6px 9px;
-  border-radius:999px;
-}
-.badge.gold{border-color:rgba(250,204,21,.35);background:rgba(250,204,21,.10);color:#fde68a}
-.price{
-  margin-top:10px;
-  font-weight:1200;
-  color:#fff;
-  font-size:1.02rem;
-}
-.actions{
-  display:flex;gap:10px;flex-wrap:wrap;
-  padding:12px;
-  border-top:1px solid rgba(148,163,184,.18);
-}
-.linkBtn{
-  flex:1;
-  text-align:center;
-  border-radius:14px;
-  padding:11px 12px;
-  font-weight:1100;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.02);
-  color:var(--muted);
-}
-.linkBtn.primary{
-  background:var(--green);
-  color:#022c22;
-  border-color:rgba(34,197,94,.25);
-}
-footer{
-  padding:18px 10px 30px;
-  text-align:center;
-  color:var(--muted);
-  font-weight:850;
-  font-size:.86rem;
-}
-.smallTip{color:var(--muted);font-weight:850;font-size:.9rem;margin-top:6px}
-</style>
+    @media (max-width: 980px){
+      .search{grid-template-columns:1fr 1fr 1fr; gap:10px}
+      .search .field:nth-child(4){grid-column:1/2}
+      .search .field:nth-child(5){grid-column:2/4}
+      .grid{grid-template-columns:repeat(2, minmax(0,1fr))}
+      .showcase{grid-template-columns:1fr}
+    }
+    @media (max-width: 620px){
+      .top{flex-direction:column}
+      .search{grid-template-columns:1fr}
+      .btn{width:100%}
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
 </head>
 
 <body>
-<div class="wrap">
-
-  <div class="top">
-    <div class="brand">
-      <div class="logo"></div>
-      <div>
-        <h1>🏡 DIGIY LOC</h1>
-        <div class="sub">Locations direct propriétaire — 0% commission — paiement direct</div>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="badge">
+          <span class="dot"></span>
+          <div style="font-weight:950">DIGIY LOC ♾️</div>
+          <div style="color:rgba(229,231,235,.75)">0% commission</div>
+        </div>
+        <h1>Trouve ta location. Simple. Rapide. Terrain.</h1>
+        <div class="sub">
+          Tu tapes une zone, tu vois les options, tu ouvres la fiche, et tu contactes.
+          <br/>Paiement direct quand c’est prêt — pas de détour.
+        </div>
+        <div class="hint">Astuce : cherche “<b>Saly</b>”, “<b>Almadies</b>”, “<b>Ngor</b>”, “<b>Saint-Louis</b>”…</div>
       </div>
     </div>
-    <div class="btnRow">
-      <a class="btn gold" href="pro-loc.html">⭐ Espace PRO</a>
-      <a class="btn primary" href="https://wa.me/221771342889?text=Bonjour%20DIGIY%20LOC%2C%20je%20veux%20publier%20mon%20logement." target="_blank" rel="noopener">📩 Publier mon logement</a>
+
+    <!-- VITRINE (exemple terrain) -->
+    <div class="showcase">
+      <div class="showLeft">
+        <div class="showTag">⭐ Vitrine du jour</div>
+        <div class="showTitle">Chez Astou — “propre, simple, accueil royal”</div>
+        <div class="showTxt">
+          Exemple de fiche PIN en vitrine. Tu cliques, tu vois direct : photos, prix, contact, et la vibe.
+        </div>
+        <div class="showActions">
+          <a class="showBtn" id="demoAstou" href="go-pin-public.html?slug=chez-astou">👀 Voir “Chez Astou”</a>
+          <button class="showBtn ghost" id="btnFocusSearch">🔎 Je cherche ma zone</button>
+        </div>
+        <div class="showMini">💡 Astuce : écris une zone (Saly, Almadies…) et laisse DIGIY LOC te guider.</div>
+      </div>
+
+      <div class="showRight">
+        <div class="showCard">
+          <div class="showCardTop">
+            <div class="miniPill">0% commission</div>
+            <div class="miniPill">Paiement direct</div>
+          </div>
+          <div class="showCardMid">
+            <div class="bigPrice">30 000 FCFA</div>
+            <div class="miniTxt">/ nuit (exemple)</div>
+          </div>
+          <div class="showCardBot">
+            <div class="miniLine">📍 Saly • proche plage</div>
+            <div class="miniLine">👥 2–4 pers • 🛏️ 1 ch</div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="filters">
-    <div>
-      <label>Recherche</label>
-      <input id="q" placeholder="ex: villa, appartement, CHEZ BAPTISTE..." />
-      <div class="smallTip">Astuce : tape juste “Saly” ou le nom du logement.</div>
-    </div>
-    <div>
-      <label>Ville</label>
-      <select id="city">
-        <option value="">Toutes</option>
-      </select>
-    </div>
-    <div>
-      <button class="btn primary" id="btnSearch" style="width:100%">🔎 Filtrer</button>
-    </div>
-  </div>
-
-  <div class="note" id="status">Chargement…</div>
-  <div class="grid" id="grid"></div>
-
-  <footer>© DIGIY LOC — Direct propriétaire • 0% commission</footer>
-</div>
-
-<script>
-/* =========================
-   SUPABASE
-========================= */
-const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-/* =========================
-   DOM
-========================= */
-const statusEl = document.getElementById("status");
-const gridEl   = document.getElementById("grid");
-const qEl      = document.getElementById("q");
-const cityEl   = document.getElementById("city");
-const btnSearch= document.getElementById("btnSearch");
-
-const FALLBACK_PHOTO = "https://digiylyfe.com/wp-content/uploads/2025/06/042-BAPTISTE.png";
-
-function setStatus(msg, type){
-  statusEl.classList.remove("ok","bad");
-  if(type) statusEl.classList.add(type);
-  statusEl.textContent = msg;
-}
-function money(n){
-  const v = Number(n||0);
-  return v.toLocaleString("fr-FR") + " FCFA";
-}
-function esc(s){
-  return String(s ?? "")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;")
-    .replaceAll(">","&gt;").replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-function normalizeStatus(s){
-  const v = String(s||"").toLowerCase().trim();
-  if(["actif","active","published","online"].includes(v)) return "actif";
-  return v || "brouillon";
-}
-
-function matchesSearch(row, q){
-  if(!q) return true;
-  const hay = [
-    row.nom, row.ville, row.adresse, row.description
-  ].filter(Boolean).join(" ").toLowerCase();
-  return hay.includes(q.toLowerCase());
-}
-
-let allRows = [];
-
-function render(rows){
-  gridEl.innerHTML = "";
-  if(!rows || rows.length===0){
-    setStatus("Aucun logement disponible pour le moment.", "ok");
-    return;
-  }
-  setStatus(`${rows.length} logement(s) disponible(s).`, "ok");
-
-  rows.forEach(l=>{
-    const img = (l.photo_url && String(l.photo_url).startsWith("http")) ? l.photo_url : FALLBACK_PHOTO;
-    const ville = l.ville || "—";
-    const adr = l.adresse ? " • " + l.adresse : "";
-    const prix = money(l.prix_nuit);
-
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <img class="thumb" loading="lazy" src="${esc(img)}" alt="${esc(l.nom || "Logement")}">
-      <div class="cardBody">
-        <h3 class="title">${esc(l.nom || "Logement")}</h3>
-        <div class="meta">${esc(ville)}${esc(adr)}</div>
-
-        <div class="badges">
-          <span class="badge gold">0% commission</span>
-          <span class="badge">Direct propriétaire</span>
+    <div class="card">
+      <div class="search">
+        <div class="field">
+          <label for="q">Où tu veux poser tes valises ?</label>
+          <input id="q" placeholder="Ex: Saly, Dakar, Almadies, Ngor..." autocomplete="off" />
         </div>
 
-        <div class="price">💰 ${prix} / nuit</div>
+        <div class="field">
+          <label for="kind">Type</label>
+          <select id="kind">
+            <option value="">Tout</option>
+            <option value="villa">Villa</option>
+            <option value="appartement">Appartement</option>
+            <option value="studio">Studio</option>
+            <option value="chambre">Chambre</option>
+            <option value="maison">Maison</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="guests">Personnes</label>
+          <input id="guests" type="number" min="1" step="1" placeholder="Ex: 2" />
+        </div>
+
+        <div class="field">
+          <label for="maxPrice">Budget / nuit (FCFA)</label>
+          <input id="maxPrice" type="number" min="0" step="1000" placeholder="Ex: 30000" />
+        </div>
+
+        <button class="btn" id="btnSearch">🔎 Chercher</button>
       </div>
-      <div class="actions">
-        <a class="linkBtn primary" href="loc.html?id=${encodeURIComponent(l.id)}">Voir la fiche</a>
-        <a class="linkBtn" href="https://wa.me/${encodeURIComponent(String(l.proprietaire_phone||'').replace(/[^\d]/g,''))}?text=Bonjour%20je%20viens%20de%20voir%20${encodeURIComponent(l.nom||'votre logement')}%20sur%20DIGIY%20LOC." target="_blank" rel="noopener">WhatsApp</a>
+
+      <div class="row">
+        <div class="chips">
+          <span class="chip">📍 Basé sur <b>go_pins</b></span>
+          <span class="chip">🔗 Carte → <b>go-pin-public.html</b>?slug=…</span>
+          <span class="chip">🔒 Cockpit privé (inchangé)</span>
+        </div>
+        <div id="countTxt">—</div>
       </div>
-    `;
-    gridEl.appendChild(div);
-  });
-}
+    </div>
 
-function rebuildCities(rows){
-  const cities = Array.from(new Set((rows||[]).map(r=>String(r.ville||"").trim()).filter(Boolean))).sort((a,b)=>a.localeCompare(b));
-  cityEl.innerHTML = `<option value="">Toutes</option>` + cities.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
-}
+    <div id="state" class="state" style="display:none"></div>
+    <div id="grid" class="grid"></div>
+  </div>
 
-function applyFilters(){
-  const q = qEl.value.trim();
-  const c = cityEl.value.trim().toLowerCase();
+  <!-- Supabase JS (v2) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  const filtered = allRows.filter(r=>{
-    if(c && String(r.ville||"").trim().toLowerCase() !== c) return false;
-    if(!matchesSearch(r, q)) return false;
-    return true;
-  });
+  <script>
+    /* =========================
+       DIGIY LOC — INDEX (PUBLIC)
+       Source: go_pins
+       Chaque carte -> go-pin-public.html?slug=...
+       Aucun refactor cockpit
+    ========================== */
 
-  render(filtered);
-}
+    /* 🔐 SUPABASE — DÉJÀ POSÉ */
+    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2i";
 
-btnSearch.addEventListener("click", applyFilters);
-qEl.addEventListener("input", ()=>{ window.clearTimeout(window.__t); window.__t = setTimeout(applyFilters, 180); });
-cityEl.addEventListener("change", applyFilters);
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-(async function load(){
-  try{
-    setStatus("Chargement des logements…");
+    // UI
+    const elQ = document.getElementById("q");
+    const elKind = document.getElementById("kind");
+    const elGuests = document.getElementById("guests");
+    const elMaxPrice = document.getElementById("maxPrice");
+    const btn = document.getElementById("btnSearch");
+    const grid = document.getElementById("grid");
+    const state = document.getElementById("state");
+    const countTxt = document.getElementById("countTxt");
 
-    // IMPORTANT: ton status = "actif" (vu dans tes rows). Donc on filtre intelligemment.
-    const { data, error } = await SB
-      .from("digiy_logements")
-      .select("id,nom,ville,adresse,description,photo_url,prix_nuit,status,created_at,proprietaire_phone")
-      .order("created_at", { ascending:false })
-      .limit(80);
-
-    if(error){
-      console.error(error);
-      setStatus("Erreur Supabase:\n" + (error.message || JSON.stringify(error)), "bad");
-      return;
+    // Vitrine: focus search
+    const btnFocusSearch = document.getElementById("btnFocusSearch");
+    if (btnFocusSearch){
+      btnFocusSearch.addEventListener("click", () => {
+        elQ.scrollIntoView({ behavior: "smooth", block: "center" });
+        setTimeout(() => elQ.focus(), 250);
+      });
     }
 
-    const rows = (data || []).filter(r => normalizeStatus(r.status) === "actif");
+    // Helpers
+    const esc = (s) => (s ?? "").toString()
+      .replaceAll("&","&amp;").replaceAll("<","&lt;")
+      .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 
-    allRows = rows;
-    rebuildCities(allRows);
-    render(allRows);
-  }catch(e){
-    console.error(e);
-    setStatus("Erreur JS:\n" + (e.message || e), "bad");
-  }
-})();
-</script>
+    const fmtFCFA = (n) => {
+      const x = Number(n);
+      if (!Number.isFinite(x) || x <= 0) return "";
+      try { return x.toLocaleString("fr-FR") + " FCFA"; }
+      catch { return String(x) + " FCFA"; }
+    };
+
+    function showState(kind, title, msg) {
+      state.style.display = "block";
+      const icon = kind === "loading" ? `<span class="spin"></span>` : (kind === "error" ? "⚠️" : "ℹ️");
+      const head = kind === "loading"
+        ? `<div class="loader">${icon}<b>${esc(title)}</b></div>`
+        : `<div style="font-weight:950;font-size:15px">${icon} ${esc(title)}</div>`;
+      state.innerHTML = `${head}<p class="small">${esc(msg || "")}</p>`;
+    }
+    function hideState(){ state.style.display = "none"; state.innerHTML = ""; }
+
+    function pinCard(p){
+      // Champs flex: adapte si tu as d’autres noms
+      const slug = p.slug ?? p.pin_slug ?? p.code ?? "";
+      const title = p.title ?? p.name ?? p.label ?? "Location";
+      const city = p.city ?? p.ville ?? "";
+      const area = p.area ?? p.zone ?? p.neighborhood ?? "";
+      const kind = p.kind ?? p.type ?? "";
+      const guests = p.guests ?? p.max_guests ?? p.capacity ?? null;
+      const bedrooms = p.bedrooms ?? p.rooms ?? p.chambres ?? null;
+      const price = p.price_per_night ?? p.night_price ?? p.price ?? p.prix ?? null;
+      const cover = p.cover_url ?? p.cover ?? p.image_url ?? p.photo_url ?? "";
+
+      const place = [area, city].filter(Boolean).join(" • ");
+      const ribbon = kind ? esc(kind) : "Disponible";
+      const href = slug ? `go-pin-public.html?slug=${encodeURIComponent(slug)}` : `go-pin-public.html`;
+
+      const kpis = [];
+      if (Number.isFinite(Number(bedrooms)) && Number(bedrooms) > 0) kpis.push(`🛏️ ${Number(bedrooms)} ch.`);
+      if (Number.isFinite(Number(guests)) && Number(guests) > 0) kpis.push(`👥 ${Number(guests)} pers.`);
+      if (place) kpis.push(`📍 ${place}`);
+
+      const priceTxt = fmtFCFA(price);
+
+      return `
+        <a class="pin" href="${href}">
+          <div class="cover">
+            ${cover ? `<img src="${esc(cover)}" alt="${esc(title)}" loading="lazy" />` : ``}
+            <div class="ribbon">✨ ${ribbon}</div>
+          </div>
+          <div class="content">
+            <div class="title">${esc(title)}</div>
+            <div class="meta">
+              <div class="place">${place ? esc(place) : "Zone à confirmer"}</div>
+              <div class="price">${priceTxt ? esc(priceTxt) : "Prix à voir"}</div>
+            </div>
+
+            <div class="kpis">
+              ${kpis.slice(0,3).map(x => `<span class="kpi">${esc(x)}</span>`).join("")}
+            </div>
+
+            <div class="cta">
+              <span>Ouvre la fiche →</span>
+              <span class="go">Voir le PIN ⟶</span>
+            </div>
+          </div>
+        </a>
+      `;
+    }
+
+    async function fetchPins(){
+      hideState();
+      grid.innerHTML = "";
+      countTxt.textContent = "—";
+
+      const q = (elQ.value || "").trim().toLowerCase();
+      const kind = (elKind.value || "").trim().toLowerCase();
+      const guests = Number(elGuests.value || 0);
+      const maxPrice = Number(elMaxPrice.value || 0);
+
+      showState("loading", "On cherche…", "On te ramène les meilleures options du coin.");
+
+      // ✅ Query go_pins (public)
+      let query = sb
+        .from("go_pins")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(60);
+
+      // Filtre texte (souple)
+      if (q){
+        query = query.or(
+          [
+            `title.ilike.%${q}%`,
+            `name.ilike.%${q}%`,
+            `city.ilike.%${q}%`,
+            `ville.ilike.%${q}%`,
+            `area.ilike.%${q}%`,
+            `zone.ilike.%${q}%`,
+            `neighborhood.ilike.%${q}%`,
+            `slug.ilike.%${q}%`
+          ].join(",")
+        );
+      }
+
+      if (kind){
+        query = query.or(`kind.eq.${kind},type.eq.${kind}`);
+      }
+
+      const { data, error } = await query;
+
+      if (error){
+        // Fallback: sans OR (au cas où des colonnes n’existent pas)
+        const { data: data2, error: error2 } = await sb
+          .from("go_pins")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(60);
+
+        if (error2){
+          showState("error", "Oups… ça bloque.", "Le public n’arrive pas à lire go_pins. Vérifie la RLS + colonnes, puis recharge.");
+          console.error(error2);
+          return;
+        }
+
+        const filtered = (data2 || []).filter(p => {
+          const txt = `${p.title||""} ${p.name||""} ${p.city||""} ${p.ville||""} ${p.area||""} ${p.zone||""} ${p.neighborhood||""} ${p.slug||""}`.toLowerCase();
+          if (q && !txt.includes(q)) return false;
+
+          const k = (p.kind ?? p.type ?? "").toString().toLowerCase();
+          if (kind && k && k !== kind) return false;
+
+          const g = Number(p.guests ?? p.max_guests ?? p.capacity ?? 0);
+          if (Number.isFinite(guests) && guests > 0 && Number.isFinite(g) && g > 0 && g < guests) return false;
+
+          const price = Number(p.price_per_night ?? p.night_price ?? p.price ?? p.prix ?? 0);
+          if (Number.isFinite(maxPrice) && maxPrice > 0 && Number.isFinite(price) && price > 0 && price > maxPrice) return false;
+
+          return true;
+        });
+
+        renderPins(filtered);
+        return;
+      }
+
+      const filtered = (data || []).filter(p => {
+        const g = Number(p.guests ?? p.max_guests ?? p.capacity ?? 0);
+        if (Number.isFinite(guests) && guests > 0 && Number.isFinite(g) && g > 0 && g < guests) return false;
+
+        const price = Number(p.price_per_night ?? p.night_price ?? p.price ?? p.prix ?? 0);
+        if (Number.isFinite(maxPrice) && maxPrice > 0 && Number.isFinite(price) && price > 0 && price > maxPrice) return false;
+
+        return true;
+      });
+
+      renderPins(filtered);
+    }
+
+    function renderPins(list){
+      hideState();
+      const arr = list || [];
+      countTxt.textContent = arr.length ? `${arr.length} résultat(s)` : "0 résultat";
+
+      if (!arr.length){
+        showState("info", "Rien pour l’instant.", "Change la zone, enlève un filtre, ou réessaie. Le terrain bouge vite.");
+        grid.innerHTML = "";
+        return;
+      }
+
+      grid.innerHTML = arr.map(pinCard).join("");
+    }
+
+    // UX: Enter = search
+    elQ.addEventListener("keydown", (e) => { if (e.key === "Enter") fetchPins(); });
+    elGuests.addEventListener("keydown", (e) => { if (e.key === "Enter") fetchPins(); });
+    elMaxPrice.addEventListener("keydown", (e) => { if (e.key === "Enter") fetchPins(); });
+    btn.addEventListener("click", fetchPins);
+
+    // Auto-load
+    fetchPins();
+  </script>
 </body>
 </html>
