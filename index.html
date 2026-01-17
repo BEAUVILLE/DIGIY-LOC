@@ -97,6 +97,12 @@
       background:rgba(2,44,34,.26);
       padding:6px 10px;border-radius:999px;
       font-size:12.5px;color:rgba(229,231,235,.9);
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .chip.cta{
+      border-color:rgba(250,204,21,.35);
+      background:rgba(250,204,21,.08);
+      font-weight:950;
     }
 
     .grid{
@@ -105,30 +111,6 @@
       grid-template-columns:repeat(3, minmax(0,1fr));
       gap:12px;
     }
-
-    /* ===== TOP 10 VITRINE ===== */
-    .sectionTitle{
-      margin:14px 0 10px;
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-    }
-    .sectionTitle h2{
-      font-size:15px;
-      font-weight:950;
-      letter-spacing:.2px;
-      color:rgba(229,231,235,.95);
-      display:flex;align-items:center;gap:8px;
-    }
-    .sectionTitle .note{
-      color:rgba(229,231,235,.75);
-      font-size:12.5px;
-    }
-    .top10{
-      margin-top:10px;
-      display:grid;
-      grid-template-columns:repeat(3, minmax(0,1fr));
-      gap:12px;
-    }
-
     .pin{
       border:1px solid rgba(148,163,184,.18);
       background:rgba(2,44,34,.25);
@@ -183,7 +165,7 @@
       letter-spacing:.2px;
       white-space:nowrap;
     }
-    .cta{
+    .ctaRow{
       margin-top:10px;
       display:flex;align-items:center;justify-content:space-between;gap:10px;
       color:rgba(229,231,235,.85);
@@ -197,25 +179,6 @@
       background:rgba(250,204,21,.08);
     }
 
-    /* petit bouton partner */
-    .partnerRow{
-      margin-top:10px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      font-size:12.5px;
-      color:rgba(229,231,235,.85);
-    }
-    .partnerBtn{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:7px 10px;border-radius:12px;
-      border:1px solid rgba(34,197,94,.35);
-      background:rgba(34,197,94,.10);
-      font-weight:900;
-      white-space:nowrap;
-    }
-
     .state{
       margin-top:14px;
       border:1px dashed rgba(148,163,184,.30);
@@ -226,10 +189,7 @@
     }
     .state p{color:var(--muted);margin-top:6px;line-height:1.4}
     .small{font-size:12.5px}
-    .loader{
-      display:inline-flex;align-items:center;gap:10px;
-      color:rgba(229,231,235,.92);
-    }
+    .loader{display:inline-flex;align-items:center;gap:10px;color:rgba(229,231,235,.92)}
     .spin{
       width:18px;height:18px;border-radius:999px;
       border:2px solid rgba(229,231,235,.25);
@@ -238,7 +198,7 @@
     }
     @keyframes rot{to{transform:rotate(360deg)}}
 
-    /* ===== VITRINE CHAUDE (terrain) ===== */
+    /* ===== VITRINE CHAUDE ===== */
     .showcase{
       margin:14px 0 14px;
       border:1px solid var(--line);
@@ -307,7 +267,6 @@
       .search .field:nth-child(4){grid-column:1/2}
       .search .field:nth-child(5){grid-column:2/4}
       .grid{grid-template-columns:repeat(2, minmax(0,1fr))}
-      .top10{grid-template-columns:repeat(2, minmax(0,1fr))}
       .showcase{grid-template-columns:1fr}
     }
     @media (max-width: 620px){
@@ -315,7 +274,6 @@
       .search{grid-template-columns:1fr}
       .btn{width:100%}
       .grid{grid-template-columns:1fr}
-      .top10{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -335,20 +293,29 @@
           <br/>Paiement direct quand c’est prêt — pas de détour.
         </div>
         <div class="hint">Astuce : cherche “<b>Saly</b>”, “<b>Almadies</b>”, “<b>Ngor</b>”, “<b>Saint-Louis</b>”…</div>
+
+        <!-- CTA PROPRIO (conversion) -->
+        <div class="showActions" style="margin-top:12px">
+          <a class="showBtn" href="./proprio-loc.html">🏠 Je suis propriétaire (m’inscrire)</a>
+          <a class="showBtn ghost"
+             href="https://wa.me/221771342889?text=Bonjour%20DIGIY%20LOC%2C%20je%20suis%20propri%C3%A9taire%20et%20je%20veux%20mettre%20mon%20logement%20sur%20la%20vitrine.">
+            📲 Parler à l’équipe
+          </a>
+        </div>
+        <div class="showMini">Propriétaire ? Tu passes dans la vitrine. Paiement direct. 0% commission.</div>
       </div>
     </div>
 
-    <!-- VITRINE (exemple terrain) -->
+    <!-- VITRINE : mets ici un SLUG LOC réel (sinon 404) -->
     <div class="showcase">
       <div class="showLeft">
         <div class="showTag">⭐ Vitrine du jour</div>
-        <div class="showTitle">Chez Astou — “propre, simple, accueil royal”</div>
+        <div class="showTitle">Chez Baptiste — “accueil royal, propre, direct”</div>
         <div class="showTxt">
-          Exemple de fiche en vitrine. Tu cliques, tu vois direct : photos, prix, contact, et la vibe.
+          Exemple de fiche logement. Photos, prix, contact WhatsApp, et si dispo : fiche partenaire complète.
         </div>
         <div class="showActions">
-          <!-- ✅ lien public -> go-pin.html -->
-          <a class="showBtn" id="demoAstou" href="go-pin.html?slug=chez-astou-saly">👀 Voir “Chez Astou”</a>
+          <a class="showBtn" href="go-pin.html?slug=chez-baptiste-saly">👀 Voir la fiche</a>
           <button class="showBtn ghost" id="btnFocusSearch">🔎 Je cherche ma zone</button>
         </div>
         <div class="showMini">💡 Astuce : écris une zone (Saly, Almadies…) et laisse DIGIY LOC te guider.</div>
@@ -359,6 +326,7 @@
           <div class="showCardTop">
             <div class="miniPill">0% commission</div>
             <div class="miniPill">Paiement direct</div>
+            <div class="miniPill">WhatsApp direct</div>
           </div>
           <div class="showCardMid">
             <div class="bigPrice">30 000 FCFA</div>
@@ -371,13 +339,6 @@
         </div>
       </div>
     </div>
-
-    <!-- ✅ TOP 10 (premiers inscrits) -->
-    <div class="sectionTitle">
-      <h2>🏆 Les 10 premiers inscrits (vitrine)</h2>
-      <div class="note">Ils passent devant — c’est la règle du terrain.</div>
-    </div>
-    <div id="top10" class="top10"></div>
 
     <div class="card">
       <div class="search">
@@ -416,6 +377,7 @@
           <span class="chip">📍 Basé sur <b>go_pins</b></span>
           <span class="chip">🔗 Carte → <b>go-pin.html</b>?slug=…</span>
           <span class="chip">🔒 Cockpit privé (inchangé)</span>
+          <a class="chip cta" href="./proprio-loc.html">➕ Ajouter mon logement</a>
         </div>
         <div id="countTxt">—</div>
       </div>
@@ -425,16 +387,12 @@
     <div id="grid" class="grid"></div>
   </div>
 
-  <!-- Supabase JS (v2) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script>
     /* =========================
        DIGIY LOC — INDEX (PUBLIC)
        Source: go_pins
-       Top 10 = premiers inscrits (created_at asc)
-       Cartes -> go-pin.html?slug=...
-       Aucun refactor cockpit
+       Chaque carte -> go-pin.html?slug=...
     ========================== */
 
     /* 🔐 SUPABASE — DÉJÀ POSÉ */
@@ -444,18 +402,15 @@
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // UI
     const elQ = document.getElementById("q");
     const elKind = document.getElementById("kind");
     const elGuests = document.getElementById("guests");
     const elMaxPrice = document.getElementById("maxPrice");
     const btn = document.getElementById("btnSearch");
     const grid = document.getElementById("grid");
-    const top10 = document.getElementById("top10");
     const state = document.getElementById("state");
     const countTxt = document.getElementById("countTxt");
 
-    // Vitrine: focus search
     const btnFocusSearch = document.getElementById("btnFocusSearch");
     if (btnFocusSearch){
       btnFocusSearch.addEventListener("click", () => {
@@ -464,7 +419,6 @@
       });
     }
 
-    // Helpers
     const esc = (s) => (s ?? "").toString()
       .replaceAll("&","&amp;").replaceAll("<","&lt;")
       .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
@@ -474,11 +428,6 @@
       if (!Number.isFinite(x) || x <= 0) return "";
       try { return x.toLocaleString("fr-FR") + " FCFA"; }
       catch { return String(x) + " FCFA"; }
-    };
-
-    const num = (v) => {
-      const x = Number(v);
-      return Number.isFinite(x) ? x : 0;
     };
 
     function showState(kind, title, msg) {
@@ -491,38 +440,25 @@
     }
     function hideState(){ state.style.display = "none"; state.innerHTML = ""; }
 
-    // ✅ partner url tolérant (n’explose pas si colonne absente)
-    function getPartnerUrl(p){
-      const u =
-        p.partner_url ||
-        p.partner_link ||
-        p.partner_page ||
-        p.fiche_url ||
-        p.fiche_partenaire_url ||
-        p.wp_url ||
-        p.website ||
-        "";
-      return (u && typeof u === "string") ? u.trim() : "";
-    }
-
-    function pinCard(p, rankLabel){
+    function pinCard(p){
       const slug = p.slug ?? p.pin_slug ?? p.code ?? "";
+      if (!slug) return "";
+
       const title = p.title ?? p.name ?? p.label ?? "Location";
       const city = p.city ?? p.ville ?? "";
       const area = p.area ?? p.zone ?? p.neighborhood ?? "";
       const kind = p.kind ?? p.type ?? "";
       const guests = p.guests ?? p.max_guests ?? p.capacity ?? null;
       const bedrooms = p.bedrooms ?? p.rooms ?? p.chambres ?? null;
+      const price = p.price_per_night ?? p.night_price ?? p.price ?? p.prix ?? null;
+      const cover = p.cover_url ?? p.cover ?? p.image_url ?? p.photo_url ?? "";
 
-      // Prix nuit (tolérant)
-      const price = p.price_per_night ?? p.night_price ?? p.price_night ?? p.price ?? p.prix ?? null;
-
-      // Cover (tolérant)
-      const cover = p.cover_url ?? p.cover ?? p.image_url ?? p.photo_url ?? p.photo ?? "";
+      // Fiche partenaire (si tu l’as en DB via un champ existant)
+      const partnerUrl = p.partner_link ?? p.partner_page ?? p.website ?? p.url ?? "";
 
       const place = [area, city].filter(Boolean).join(" • ");
-      const ribbonTxt = rankLabel ? `🏆 ${rankLabel}` : (kind ? kind : "Disponible");
-      const href = slug ? `go-pin.html?slug=${encodeURIComponent(slug)}` : `go-pin.html`;
+      const ribbon = kind ? esc(kind) : "Disponible";
+      const href = `go-pin.html?slug=${encodeURIComponent(slug)}`;
 
       const kpis = [];
       if (Number.isFinite(Number(bedrooms)) && Number(bedrooms) > 0) kpis.push(`🛏️ ${Number(bedrooms)} ch.`);
@@ -531,16 +467,15 @@
 
       const priceTxt = fmtFCFA(price);
 
-      const partnerUrl = getPartnerUrl(p);
-      const partnerBtn = partnerUrl
-        ? `<a class="partnerBtn" href="${esc(partnerUrl)}" target="_blank" rel="noopener">🎥 Fiche complète</a>`
-        : `<span style="color:rgba(229,231,235,.72)">Fiche partenaire : bientôt</span>`;
+      const partnerBadge = partnerUrl
+        ? `<span class="kpi">🎥 Fiche complète</span>`
+        : ``;
 
       return `
         <a class="pin" href="${href}">
           <div class="cover">
             ${cover ? `<img src="${esc(cover)}" alt="${esc(title)}" loading="lazy" />` : ``}
-            <div class="ribbon">✨ ${esc(ribbonTxt)}</div>
+            <div class="ribbon">✨ ${ribbon}</div>
           </div>
           <div class="content">
             <div class="title">${esc(title)}</div>
@@ -551,62 +486,16 @@
 
             <div class="kpis">
               ${kpis.slice(0,3).map(x => `<span class="kpi">${esc(x)}</span>`).join("")}
+              ${partnerBadge}
             </div>
 
-            <div class="partnerRow">
-              ${partnerBtn}
+            <div class="ctaRow">
+              <span>Ouvre la fiche →</span>
               <span class="go">Voir le PIN ⟶</span>
             </div>
           </div>
         </a>
       `;
-    }
-
-    // ✅ Top10 = created_at ASC (premiers inscrits)
-    async function loadTop10(){
-      top10.innerHTML = "";
-
-      // On tente created_at, sinon fallback updated_at
-      let { data, error } = await sb
-        .from("go_pins")
-        .select("*")
-        .order("created_at", { ascending: true })
-        .limit(10);
-
-      if (error){
-        const res2 = await sb
-          .from("go_pins")
-          .select("*")
-          .order("updated_at", { ascending: true })
-          .limit(10);
-
-        data = res2.data || [];
-        error = res2.error;
-      }
-
-      if (error){
-        console.error(error);
-        top10.innerHTML = `
-          <div class="state" style="grid-column:1/-1">
-            <div style="font-weight:950">⚠️ Vitrine Top 10 indisponible</div>
-            <p class="small">Le public n’arrive pas à lire go_pins. Vérifie la RLS, puis recharge.</p>
-          </div>
-        `;
-        return;
-      }
-
-      const arr = data || [];
-      if (!arr.length){
-        top10.innerHTML = `
-          <div class="state" style="grid-column:1/-1">
-            <div style="font-weight:950">ℹ️ Pas encore de fiches</div>
-            <p class="small">Dès que les proprios s’inscrivent, ils sortent ici automatiquement.</p>
-          </div>
-        `;
-        return;
-      }
-
-      top10.innerHTML = arr.map((p, i) => pinCard(p, `Top ${i+1}`)).join("");
     }
 
     async function fetchPins(){
@@ -616,19 +505,21 @@
 
       const q = (elQ.value || "").trim().toLowerCase();
       const kind = (elKind.value || "").trim().toLowerCase();
-      const guestsNeed = Number(elGuests.value || 0);
+      const guests = Number(elGuests.value || 0);
       const maxPrice = Number(elMaxPrice.value || 0);
 
       showState("loading", "On cherche…", "On te ramène les meilleures options du coin.");
 
-      // ✅ Query go_pins (public)
+      // ✅ LOC ONLY : évite boutiques/market/style dans DIGIY LOC
+      // Si ton champ n'est pas "category", remplace ici :
+      // .eq("module","loc") ou .eq("kind","loc")
       let query = sb
         .from("go_pins")
         .select("*")
+        .eq("category","loc")
         .order("created_at", { ascending: false })
         .limit(60);
 
-      // Filtre texte (souple)
       if (q){
         query = query.or(
           [
@@ -650,38 +541,18 @@
 
       const { data, error } = await query;
 
-      let list = data || [];
       if (error){
-        // Fallback: sans OR (au cas où des colonnes n’existent pas)
-        const { data: data2, error: error2 } = await sb
-          .from("go_pins")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(60);
-
-        if (error2){
-          showState("error", "Oups… ça bloque.", "Le public n’arrive pas à lire go_pins. Vérifie la RLS + colonnes, puis recharge.");
-          console.error(error2);
-          return;
-        }
-        list = data2 || [];
+        showState("error", "Oups… ça bloque.", "Le public n’arrive pas à lire go_pins (ou champ category absent). Vérifie RLS + champs, puis recharge.");
+        console.error(error);
+        return;
       }
 
-      // Filtrage JS (safe)
-      const filtered = (list || []).filter(p => {
-        if (q){
-          const txt = `${p.title||""} ${p.name||""} ${p.city||""} ${p.ville||""} ${p.area||""} ${p.zone||""} ${p.neighborhood||""} ${p.slug||""}`.toLowerCase();
-          if (!txt.includes(q)) return false;
-        }
+      const filtered = (data || []).filter(p => {
+        const g = Number(p.guests ?? p.max_guests ?? p.capacity ?? 0);
+        if (Number.isFinite(guests) && guests > 0 && Number.isFinite(g) && g > 0 && g < guests) return false;
 
-        const k = (p.kind ?? p.type ?? "").toString().toLowerCase();
-        if (kind && k && k !== kind) return false;
-
-        const g = num(p.guests ?? p.max_guests ?? p.capacity ?? 0);
-        if (Number.isFinite(guestsNeed) && guestsNeed > 0 && g > 0 && g < guestsNeed) return false;
-
-        const price = num(p.price_per_night ?? p.night_price ?? p.price_night ?? p.price ?? p.prix ?? 0);
-        if (Number.isFinite(maxPrice) && maxPrice > 0 && price > 0 && price > maxPrice) return false;
+        const price = Number(p.price_per_night ?? p.night_price ?? p.price ?? p.prix ?? 0);
+        if (Number.isFinite(maxPrice) && maxPrice > 0 && Number.isFinite(price) && price > 0 && price > maxPrice) return false;
 
         return true;
       });
@@ -691,7 +562,7 @@
 
     function renderPins(list){
       hideState();
-      const arr = list || [];
+      const arr = (list || []).filter(Boolean);
       countTxt.textContent = arr.length ? `${arr.length} résultat(s)` : "0 résultat";
 
       if (!arr.length){
@@ -700,20 +571,15 @@
         return;
       }
 
-      grid.innerHTML = arr.map(p => pinCard(p, "")).join("");
+      grid.innerHTML = arr.map(pinCard).join("");
     }
 
-    // UX: Enter = search
     elQ.addEventListener("keydown", (e) => { if (e.key === "Enter") fetchPins(); });
     elGuests.addEventListener("keydown", (e) => { if (e.key === "Enter") fetchPins(); });
     elMaxPrice.addEventListener("keydown", (e) => { if (e.key === "Enter") fetchPins(); });
     btn.addEventListener("click", fetchPins);
 
-    // Auto-load
-    (async () => {
-      await loadTop10();
-      await fetchPins();
-    })();
+    fetchPins();
   </script>
 </body>
 </html>
