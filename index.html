@@ -1,128 +1,661 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>DIGIY LOC ♾️ — Trouve ta location</title>
+  <meta charset="utf-8">
+  <title>DIGIY LOC — Galerie des logements partenaires</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="DIGIY LOC — Locations direct propriétaire, paiement direct, 0% commission.">
+  <meta name="theme-color" content="#020617">
 
-<style>
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
-  background:linear-gradient(135deg,#022c22,#065f46);
-  color:#f9fafb;
-}
-.wrap{max-width:1100px;margin:auto;padding:16px}
-h1{margin:8px 0 4px}
-.sub{color:#cbd5f5;font-size:14px;margin-bottom:10px}
+  <style>
+    :root{
+      --bg:#020617;
+      --bg-soft:#020818;
+      --card:#030712;
+      --accent:#facc15;
+      --accent-soft:#f97316;
+      --accent-green:#22c55e;
+      --ink:#f9fafb;
+      --muted:#cbd5f5;
+      --line:rgba(148,163,184,0.22);
+      --shadow-soft:0 20px 45px rgba(15,23,42,0.9);
+    }
 
-.top-btns{
-  display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px
-}
-.top-btns a{
-  padding:10px 14px;border-radius:999px;
-  font-weight:800;font-size:14px;text-decoration:none;
-  background:#facc15;color:#022c22
-}
+    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+    body{
+      min-height:100vh;
+      background:
+        radial-gradient(circle at top,rgba(250,204,21,0.16),transparent 60%),
+        radial-gradient(circle at bottom,rgba(34,197,94,0.16),transparent 55%),
+        var(--bg);
+      color:var(--ink);
+      display:flex;
+      justify-content:center;
+      padding:10px;
+      font-size:16px;
+    }
 
-.showcase{
-  background:#020617;
-  border-radius:18px;padding:14px;margin-bottom:16px
-}
-.showcase strong{color:#facc15}
+    .app{
+      width:100%;
+      max-width:1100px;
+      min-height:100vh;
+      background:linear-gradient(135deg,#020617 0%,#020818 50%,#020617 100%);
+      border-radius:24px;
+      border:1px solid rgba(148,163,184,0.25);
+      box-shadow:var(--shadow-soft);
+      padding:16px 16px 22px;
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      overflow:hidden;
+    }
 
-.search{
-  background:#020617;border-radius:18px;padding:14px;margin-bottom:14px;
-  display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px
-}
-input,select{
-  padding:10px;border-radius:12px;border:1px solid #1f2937;
-  background:#020617;color:#f9fafb
-}
-button{
-  padding:10px 14px;border-radius:12px;border:none;
-  background:#facc15;font-weight:900;cursor:pointer
-}
+    .app::before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:
+        radial-gradient(circle at 0% 0%,rgba(250,204,21,0.14),transparent 55%),
+        radial-gradient(circle at 100% 100%,rgba(34,197,94,0.14),transparent 45%);
+      opacity:0.8;
+      pointer-events:none;
+    }
 
-.grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px
-}
-.card{
-  background:#020617;border-radius:16px;padding:12px;border:1px solid #1f2937
-}
-.card h3{margin:0 0 6px}
-.price{color:#facc15;font-weight:900}
+    header{
+      position:relative;
+      z-index:2;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+    }
 
-</style>
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand-logo{
+      width:42px;height:42px;border-radius:14px;
+      background:radial-gradient(circle at 30% 0%,#facc15,#f97316);
+      display:flex;align-items:center;justify-content:center;
+      font-size:24px;
+      box-shadow:0 12px 30px rgba(234,179,8,0.65);
+    }
+    .brand-text-title{
+      font-size:20px;font-weight:900;letter-spacing:0.09em;
+      text-transform:uppercase;color:var(--accent-green);
+    }
+    .brand-text-sub{font-size:14px;color:var(--muted);font-weight:650}
+
+    .back-link{
+      font-size:13px;color:var(--muted);text-decoration:none;
+      background:rgba(15,23,42,0.9);
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.6);
+      padding:8px 14px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+    .back-link:hover{border-color:var(--accent);color:var(--accent)}
+
+    .hero{
+      background:radial-gradient(circle at top left,rgba(34,197,94,0.18),rgba(3,7,18,0.96));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.6);
+      padding:16px;
+      box-shadow:0 18px 44px rgba(15,23,42,0.95);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      position:relative;
+      z-index:2;
+    }
+    .hero-title{
+      font-size:26px;font-weight:950;color:var(--accent-green);
+      line-height:1.15;
+    }
+    .hero-title span{color:var(--accent)}
+    .hero-sub{
+      font-size:16px;color:#e5e7eb;max-width:760px;
+      font-weight:500;line-height:1.6;
+    }
+    .hero-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+    .hero-tag{
+      font-size:13px;padding:5px 11px;border-radius:999px;
+      border:1px solid rgba(148,163,184,0.7);
+      background:rgba(15,23,42,0.95);
+      color:#e5e7eb;font-weight:650;
+    }
+    .hero-tag strong{color:var(--accent)}
+
+    .cta-row{
+      margin-top:14px;
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:10px;
+      position:relative;
+      z-index:2;
+    }
+    .cta-btn{
+      background:linear-gradient(135deg,#facc15,#f97316);
+      padding:12px 18px;border-radius:999px;
+      color:#111;font-size:14px;font-weight:950;text-decoration:none;
+      box-shadow:0 8px 20px rgba(250,204,21,0.45);
+      border:1px solid rgba(250,204,21,0.65);
+      transition:transform .2s ease, box-shadow .2s ease;
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .cta-btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(250,204,21,0.65)}
+    .cta-btn.secondary{
+      background:rgba(22,163,74,0.16);
+      color:#bbf7d0;
+      border:1px solid rgba(34,197,94,0.8);
+      box-shadow:none;
+    }
+    .cta-btn.secondary:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(34,197,94,0.18)}
+
+    .filters{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:1.2fr 1fr 1fr auto auto;
+      gap:10px;
+      position:relative;
+      z-index:2;
+    }
+    input,select{
+      padding:11px 12px;border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(2,6,23,0.85);
+      color:var(--ink);
+      outline:none;
+      font-weight:800;
+    }
+    button{
+      padding:11px 14px;border-radius:14px;border:none;
+      background:linear-gradient(135deg,#facc15,#f97316);
+      font-weight:950;cursor:pointer;color:#111;
+      box-shadow:0 10px 22px rgba(250,204,21,0.25);
+      white-space:nowrap;
+    }
+    .ghost{
+      background:rgba(15,23,42,0.75);
+      color:#e5e7eb;
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+    @media(max-width:900px){.filters{grid-template-columns:1fr 1fr}}
+    @media(max-width:640px){
+      body{padding:0}
+      .app{border-radius:0;border:none;box-shadow:none;padding:12px 12px 18px}
+      .brand-text-title{font-size:18px}
+      .hero-title{font-size:22px}
+    }
+
+    .grid{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:16px;
+      position:relative;
+      z-index:2;
+    }
+    @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:640px){.grid{grid-template-columns:1fr}}
+
+    .card{
+      background:radial-gradient(circle at top,rgba(15,23,42,0.98),#020617);
+      border-radius:24px;
+      border:1px solid rgba(30,64,175,0.7);
+      padding:12px;
+      box-shadow:0 14px 34px rgba(15,23,42,0.95);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      position:relative;
+      overflow:hidden;
+    }
+    .photo{
+      height:220px;
+      border-radius:16px;
+      overflow:hidden;
+      border:2px solid rgba(30,64,175,0.85);
+      background:#0b1220;
+    }
+    .photo img{width:100%;height:100%;object-fit:cover;display:block}
+
+    .name{font-size:22px;font-weight:950;color:var(--accent);line-height:1.1}
+    .type{font-size:15px;color:#e5e7eb;font-weight:800}
+    .badge{
+      width:max-content;padding:5px 9px;font-size:12px;border-radius:999px;
+      border:1px solid rgba(34,197,94,0.9);
+      color:var(--accent-green);
+      background:rgba(15,23,42,0.98);
+      font-weight:950;
+      white-space:nowrap;
+    }
+    .desc{font-size:15px;color:#f3f4f6;line-height:1.6;font-weight:550}
+    .meta{font-size:14px;color:#e5e7eb;font-weight:750;opacity:0.95}
+
+    .contact{
+      margin-top:10px;
+      border-radius:16px;
+      border:1px solid rgba(34,197,94,1);
+      background:rgba(6,78,59,0.98);
+      padding:10px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .contact-title{font-size:14px;font-weight:950;color:#bbf7d0}
+    .contact-value{font-size:18px;font-weight:950;color:#ecfdf5;letter-spacing:0.2px}
+
+    .actions{
+      margin-top:10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:none;border-radius:999px;padding:10px 14px;
+      font-size:14px;font-weight:950;cursor:pointer;
+      display:flex;justify-content:center;align-items:center;
+      text-decoration:none;transition:transform .18s ease;
+      flex:1;min-height:44px;white-space:nowrap;
+      touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;
+    }
+    .btn:active{transform:scale(.99)}
+    .btn-primary{
+      background:linear-gradient(135deg,#facc15,#f97316);
+      color:#111;
+      box-shadow:0 7px 18px rgba(250,204,21,0.55);
+    }
+    .btn-wa{
+      background:rgba(22,163,74,0.2);
+      color:#bbf7d0;
+      border:1px solid rgba(34,197,94,0.85);
+    }
+
+    .bigmsg{
+      grid-column:1/-1;
+      background:rgba(2,6,23,0.72);
+      border:1px solid rgba(148,163,184,0.25);
+      padding:14px;
+      border-radius:18px;
+      font-weight:900;
+      color:#e5e7eb;
+      line-height:1.55;
+    }
+    .bigmsg b{color:var(--accent)}
+
+    footer{
+      margin-top:20px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:750;
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:6px;
+      position:relative;
+      z-index:2;
+    }
+    footer span{color:var(--accent);font-weight:950}
+  </style>
 </head>
+
 <body>
-<div class="wrap">
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="brand-logo">🏠</div>
+        <div>
+          <div class="brand-text-title">DIGIY LOC</div>
+          <div class="brand-text-sub">Galerie des logements partenaires</div>
+        </div>
+      </div>
 
-<h1>DIGIY LOC ♾️</h1>
-<div class="sub">
-Trouve une location rapide. Contact direct. 0% commission.
-</div>
+      <a href="https://beauville.github.io/digiy-hub/" class="back-link">
+        <span>←</span> Retour DIGIY HUB
+      </a>
+    </header>
 
-<div class="top-btns">
-<a href="https://beauville.github.io/inscription-digiy/" target="_blank">🏠 Je suis propriétaire</a>
-<a href="https://wa.me/221771342889" target="_blank">📲 Parler à l’équipe</a>
-</div>
+    <main>
+      <section class="hero">
+        <div class="hero-title">Locations direct propriétaire <span>0% commission</span></div>
+        <div class="hero-sub">
+          Tu échanges en direct avec le proprio. Paiement direct (Wave/espèces selon le logement).
+          DIGIY ne touche pas l’argent : <b>0% commission</b>.
+        </div>
+        <div class="hero-tags">
+          <div class="hero-tag"><strong>Direct propriétaire</strong> — pas d’intermédiaire</div>
+          <div class="hero-tag">Saly • Dakar • Mbour • Thiès</div>
+          <div class="hero-tag">Villa • Appartement • Studio</div>
+          <div class="hero-tag">WhatsApp en 1 clic</div>
+        </div>
+      </section>
 
-<div class="showcase">
-⭐ <strong>Vitrine du jour</strong><br>
-Chez Astou Saly — propre, accueil chaleureux, contact direct.<br><br>
-<a href="https://beauville.github.io/digiy-loc-pro/go-pin.html?slug=chez-astou-saly"
-   style="color:#22c55e;font-weight:900;text-decoration:none">
-👀 Voir la fiche Chez Astou
-</a>
-</div>
+      <section class="cta-row">
+        <a href="https://beauville.github.io/inscription-digiy/?module=loc" class="cta-btn" target="_blank" rel="noopener noreferrer">
+          🏠 Publier mon logement • 0% commission
+        </a>
+        <a href="https://wa.me/221771342889" class="cta-btn secondary" target="_blank" rel="noopener noreferrer">
+          📲 Parler à l’équipe DIGIY
+        </a>
+      </section>
 
-<div class="search">
-<input id="q" placeholder="Zone (Saly, Dakar...)"/>
-<select id="kind">
-<option value="">Tout</option>
-<option value="villa">Villa</option>
-<option value="appartement">Appartement</option>
-<option value="studio">Studio</option>
-</select>
-<input id="maxPrice" type="number" placeholder="Budget nuit"/>
-<button id="btnSearch">Chercher</button>
-</div>
+      <section class="filters">
+        <input id="q" placeholder="Zone (Saly, Dakar, Mbour...)" autocomplete="off">
+        <select id="kind">
+          <option value="">Type : Tout</option>
+          <option value="villa">Villa</option>
+          <option value="appartement">Appartement</option>
+          <option value="studio">Studio</option>
+          <option value="chambre">Chambre</option>
+        </select>
+        <input id="maxPrice" type="number" min="0" placeholder="Budget max / nuit (XOF)">
+        <button id="btnSearch">🔎 Chercher</button>
+        <button id="btnReset" class="ghost" type="button">↩︎ Reset</button>
+      </section>
 
-<div id="grid" class="grid"></div>
+      <section id="grid" class="grid"></section>
+    </main>
 
-</div>
+    <footer>
+      <div>DIGIY LOC • <span>Super App DIGIYLYFE</span> — Sénégal → Afrique</div>
+      <div>0% commission • Paiement direct • Galerie évolutive</div>
+    </footer>
+  </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const sb = supabase.createClient(
-"https://wesqmwjjtsefyjnluosj.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2i"
-);
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    /* =========================
+       SUPABASE (TES CLÉS)
+    ========================= */
+    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
 
-const grid = document.getElementById("grid");
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const grid = document.getElementById("grid");
 
-async function load(){
-grid.innerHTML="Chargement...";
-const {data}=await sb.from("go_pins").select("*").eq("module","loc");
+    /* =========================
+       PHOTO OVERRIDE (ASTOU)
+       -> Ici je "force" une belle photo sur la carte Chez Astou.
+       -> Si tu as ta vraie photo, remplace l’URL ci-dessous.
+    ========================= */
+    const PHOTO_OVERRIDES_BY_SLUG = {
+  "chez-astou-saly": "https://digiylyfe.com/wp-content/uploads/2025/06/042-BAPTISTE.png"
+};
 
-grid.innerHTML=data.map(p=>{
-const price = p.price_per_night ? p.price_per_night.toLocaleString("fr-FR")+" F" : "Prix à voir";
-return `
-<div class="card">
-<h3>${p.title}</h3>
-<div>${p.city||""}</div>
-<div class="price">${price}</div><br>
-<a href="https://beauville.github.io/digiy-loc-pro/go-pin.html?slug=${p.slug}"
-   style="color:#22c55e;font-weight:900;text-decoration:none">
-Voir le PIN
-</a>
-</div>`;
-}).join("");
-}
+    /* =========================
+       PLACEBOTS (pour garnir la page)
+       -> Utilisés seulement si on a peu de logements en base
+       -> Zéro doublon (on évite les slugs existants)
+    ========================= */
+    const PLACEBOTS = [
+      {
+        title:"Zone Saly — nouveaux logements en cours",
+        slug:"zone-saly-en-ouverture",
+        city:"Saly",
+        kind:"villa • appartement • studio",
+        price_per_night:null,
+        whatsapp:"+221 77 134 28 89",
+        cover:"https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=80",
+        desc:"Les nouveaux logements arrivent. Écris-nous pour être notifié dès qu’un nouveau logement est publié."
+      },
+      {
+        title:"Zone Dakar — ouverture progressive",
+        slug:"zone-dakar-en-ouverture",
+        city:"Dakar",
+        kind:"appartement • studio",
+        price_per_night:null,
+        whatsapp:"+221 77 134 28 89",
+        cover:"https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80",
+        desc:"On ouvre quartier par quartier. Dis ta zone + budget, on te propose."
+      },
+      {
+        title:"Zone Somone / Ngaparou — bons plans",
+        slug:"zone-somone-bons-plans",
+        city:"Somone",
+        kind:"studio • villa",
+        price_per_night:null,
+        whatsapp:"+221 77 134 28 89",
+        cover:"https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1400&q=80",
+        desc:"Tu veux un bon plan ? Envoie dates + budget, l’équipe te guide."
+      },
+      {
+        title:"Mbour — logements partenaires à venir",
+        slug:"zone-mbour-a-venir",
+        city:"Mbour",
+        kind:"villa • chambre",
+        price_per_night:null,
+        whatsapp:"+221 77 134 28 89",
+        cover:"https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1400&q=80",
+        desc:"Tu cherches sur Mbour ? On active les proprios. Contacte-nous."
+      },
+      {
+        title:"Thiès — ouverture en cours",
+        slug:"zone-thies-a-venir",
+        city:"Thiès",
+        kind:"studio • appartement",
+        price_per_night:null,
+        whatsapp:"+221 77 134 28 89",
+        cover:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1400&q=80",
+        desc:"Thiès arrive. Envoie ta zone, on te répond vite."
+      },
+      {
+        title:"Toubab Dialaw — week-end & chill",
+        slug:"zone-toubab-dialaw-weekend",
+        city:"Toubab Dialaw",
+        kind:"villa • studio",
+        price_per_night:null,
+        whatsapp:"+221 77 134 28 89",
+        cover:"https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1400&q=80",
+        desc:"Week-end au calme ? On te trouve une option selon ton budget."
+      }
+    ];
 
-document.getElementById("btnSearch").onclick=load;
-load();
-</script>
+    /* =========================
+       Helpers
+    ========================= */
+    function openWa(phone, message){
+      const txt = encodeURIComponent(message || "");
+      const digits = String(phone || "").replace(/\D/g, "");
+      const url = "https://wa.me/" + digits + (txt ? "?text=" + txt : "");
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+
+    function norm(s){ return String(s || "").trim().toLowerCase(); }
+
+    function moneyXof(v){
+      const n = Number(v || 0);
+      if (!n) return "Prix à voir";
+      return n.toLocaleString("fr-FR") + " FCFA / nuit";
+    }
+
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function escapeAttr(str){ return escapeHtml(str).replaceAll("`","&#096;"); }
+    function escapeJs(str){
+      return String(str ?? "")
+        .replaceAll("\\","\\\\")
+        .replaceAll("'","\\'")
+        .replaceAll('"','\\"')
+        .replaceAll("\n"," ")
+        .replaceAll("\r"," ");
+    }
+
+    function cardTemplate(p){
+      // go_pins columns: title, slug, category, phone, whatsapp, address_label, is_public, is_active, partner_url, featured_rank, lat/lng...
+      const title = p.title || "Logement";
+      const slug  = p.slug || "";
+      const city  = p.city || p.address_label || "—";
+
+      // On "fabrique" un type simple depuis category (tu peux enrichir plus tard)
+      const kind  = p.kind || "Location • Direct propriétaire";
+
+      const wa    = p.whatsapp || p.phone || "";
+      const desc  = p.desc || "Contact direct propriétaire. 0% commission. Terrain clean.";
+      const price = moneyXof(p.price_per_night || p.price || p.price_night);
+
+      // Photo: priority -> override Astou -> cover -> fallback
+      const cover =
+        PHOTO_OVERRIDES_BY_SLUG[slug] ||
+        p.cover ||
+        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80";
+
+      // Link: go-pin si slug, sinon partner_url si présent, sinon module
+      const goPinUrl = slug
+        ? ("https://beauville.github.io/digiy-loc-pro/go-pin.html?slug=" + encodeURIComponent(slug))
+        : (p.partner_url || "https://beauville.github.io/digiy-loc-pro/");
+
+      const waMsg = `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`;
+
+      return `
+        <article class="card">
+          <div class="photo">
+            <img alt="${escapeHtml(title)}" src="${escapeAttr(cover)}">
+          </div>
+
+          <div class="name">${escapeHtml(title)}</div>
+          <div class="type">${escapeHtml(kind)} • ${escapeHtml(city)}</div>
+
+          <div class="badge">0% com DIGIY</div>
+
+          <p class="desc">${escapeHtml(desc)}</p>
+
+          <div class="meta">${escapeHtml(price)}</div>
+
+          <div class="contact">
+            <div class="contact-title">Contact (WhatsApp)</div>
+            <div class="contact-value">${escapeHtml(wa || "+221 77 134 28 89")}</div>
+          </div>
+
+          <div class="actions">
+            <a class="btn btn-primary" href="${goPinUrl}" target="_blank" rel="noopener noreferrer">👀 Voir le PIN</a>
+            <button class="btn btn-wa" type="button"
+              onclick="openWa('${escapeJs(wa || "+221 77 134 28 89")}','${escapeJs(waMsg)}')"
+            >💬 WhatsApp</button>
+          </div>
+        </article>
+      `;
+    }
+
+    function applyFilters(list){
+      const q = norm(document.getElementById("q").value);
+      const kind = norm(document.getElementById("kind").value);
+      const maxPrice = Number(document.getElementById("maxPrice").value || 0);
+
+      return list.filter(p=>{
+        const title = norm(p.title || "");
+        const city  = norm(p.city || p.address_label || "");
+        const k     = norm(p.kind || "");
+
+        // prix si un jour tu ajoutes un champ (sinon 0 => ignore)
+        const price = Number(p.price_per_night || p.price || p.price_night || 0);
+
+        if (q && !(title.includes(q) || city.includes(q))) return false;
+        if (kind && k && !k.includes(kind)) return false;
+        if (maxPrice && price && price > maxPrice) return false;
+
+        return true;
+      });
+    }
+
+    function mergeNoDup(baseList, fillers, targetCount){
+      const merged = [...baseList];
+      const seen = new Set(baseList.map(x => String(x.slug || "").toLowerCase()).filter(Boolean));
+
+      for (const f of fillers){
+        if (merged.length >= targetCount) break;
+        const s = String(f.slug || "").toLowerCase();
+        if (s && seen.has(s)) continue;
+        merged.push(f);
+        if (s) seen.add(s);
+      }
+      return merged;
+    }
+
+    async function fetchLocPins(){
+      // ✅ IMPORTANT: sur ta table go_pins, c’est category=loc (pas module)
+      const { data, error } = await sb
+        .from("go_pins")
+        .select("*")
+        .eq("category", "loc")
+        .eq("is_public", true)
+        .eq("is_active", true)
+        .order("featured_rank", { ascending: true })
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.warn("[DIGIY LOC] Supabase error:", error.message);
+        return { ok:false, rows:[], error: error.message };
+      }
+      return { ok:true, rows: Array.isArray(data) ? data : [], error:null };
+    }
+
+    async function render(){
+      grid.innerHTML = `<div class="bigmsg">Chargement des logements…</div>`;
+
+      const res = await fetchLocPins();
+      if (!res.ok){
+        grid.innerHTML = `
+          <div class="bigmsg">
+            ❌ Erreur Supabase : <b>${escapeHtml(res.error || "inconnue")}</b><br>
+            👉 Si tu vois encore “Invalid API key”, c’est une clé/URL qui ne matche pas.
+          </div>
+        `;
+        return;
+      }
+
+      // On transforme légèrement les lignes go_pins en “cards” plus riches
+      const pins = res.rows.map(p => ({
+        ...p,
+        city: p.address_label || "",
+        kind: "Location • Direct propriétaire",
+        desc: p.partner_url ? "Lien partenaire disponible. Contact direct propriétaire. 0% commission." : "Contact direct propriétaire. 0% commission. Terrain clean."
+      }));
+
+      // ✅ On “garnit” la page jusqu’à 9 cards (placebots) sans doublon
+      const base = mergeNoDup(pins, PLACEBOTS, 9);
+
+      const filtered = applyFilters(base);
+
+      if (!filtered.length){
+        grid.innerHTML = `
+          <div class="bigmsg">
+            Aucun résultat avec ces filtres. Clique <b>Reset</b> puis relance.
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(cardTemplate).join("");
+    }
+
+    document.getElementById("btnSearch").addEventListener("click", render);
+    document.getElementById("btnReset").addEventListener("click", ()=>{
+      document.getElementById("q").value = "";
+      document.getElementById("kind").value = "";
+      document.getElementById("maxPrice").value = "";
+      render();
+    });
+
+    ["q","maxPrice"].forEach(id=>{
+      document.getElementById(id).addEventListener("keydown",(e)=>{
+        if (e.key === "Enter") render();
+      });
+    });
+
+    render();
+  </script>
 </body>
 </html>
