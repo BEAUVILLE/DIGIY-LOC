@@ -19,6 +19,7 @@
       --muted:#cbd5f5;
       --line:rgba(148,163,184,0.22);
       --shadow-soft:0 20px 45px rgba(15,23,42,0.9);
+      --glass:rgba(2,6,23,.68);
     }
 
     *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
@@ -146,6 +147,7 @@
       border:1px solid rgba(250,204,21,0.65);
       transition:transform .2s ease, box-shadow .2s ease;
       display:inline-flex;align-items:center;gap:8px;
+      cursor:pointer;
     }
     .cta-btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(250,204,21,0.65)}
     .cta-btn.secondary{
@@ -155,6 +157,12 @@
       box-shadow:none;
     }
     .cta-btn.secondary:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(34,197,94,0.18)}
+    .cta-btn.nd{
+      background:rgba(250,204,21,0.12);
+      color:#fde68a;
+      border:1px solid rgba(250,204,21,0.55);
+      box-shadow:none;
+    }
 
     .filters{
       margin-top:14px;
@@ -246,10 +254,6 @@
       border-color:rgba(250,204,21,0.9);
       color:var(--accent);
     }
-    .badge.blue{
-      border-color:rgba(59,130,246,0.85);
-      color:#bfdbfe;
-    }
     .badge.free{
       border-color:rgba(34,197,94,0.95);
       color:#bbf7d0;
@@ -260,6 +264,20 @@
       color:#fecaca;
       background:rgba(127,29,29,0.55);
     }
+
+    .ndimbalBox{
+      margin-top:6px;
+      border-radius:16px;
+      border:1px solid rgba(250,204,21,0.55);
+      background:rgba(250,204,21,0.08);
+      padding:10px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .ndTitle{font-size:13px;font-weight:950;color:#fde68a}
+    .ndLine{font-size:14px;font-weight:850;color:#fff;line-height:1.45}
+    .ndSmall{font-size:12px;color:#e5e7eb;opacity:.95}
 
     .desc{font-size:15px;color:#f3f4f6;line-height:1.6;font-weight:550}
     .meta{font-size:14px;color:#e5e7eb;font-weight:750;opacity:0.95}
@@ -307,6 +325,11 @@
       color:#e5e7eb;
       border:1px solid var(--line);
     }
+    .btn-nd{
+      background:rgba(250,204,21,0.12);
+      color:#fde68a;
+      border:1px solid rgba(250,204,21,0.55);
+    }
 
     .bigmsg{
       grid-column:1/-1;
@@ -333,6 +356,144 @@
       z-index:2;
     }
     footer span{color:var(--accent);font-weight:950}
+
+    /* =========================
+       NDIMBAL OVERLAY (PAGE INTEGREE)
+    ========================= */
+    .overlay{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:14px;
+      z-index:9999;
+    }
+    .overlay.show{display:flex}
+    .panel{
+      width:100%;
+      max-width:860px;
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,.35);
+      background:linear-gradient(135deg, rgba(2,6,23,.92), rgba(2,8,24,.92));
+      box-shadow:0 30px 80px rgba(0,0,0,.55);
+      overflow:hidden;
+      position:relative;
+    }
+    .panelTop{
+      padding:16px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(250,204,21,.18), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(34,197,94,.14), transparent 50%),
+        rgba(2,6,23,.6);
+      border-bottom:1px solid rgba(148,163,184,.28);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .panelTitle{
+      font-size:18px;font-weight:950;color:#fde68a;
+      letter-spacing:.02em;
+    }
+    .panelSub{
+      margin-top:6px;
+      font-size:14px;
+      color:#e5e7eb;
+      font-weight:650;
+      line-height:1.55;
+      max-width:640px;
+    }
+    .panelClose{
+      background:rgba(15,23,42,.75);
+      border:1px solid rgba(148,163,184,.28);
+      color:#e5e7eb;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:950;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .panelBody{
+      padding:16px;
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:14px;
+    }
+    @media(max-width:820px){.panelBody{grid-template-columns:1fr}}
+    .box{
+      border:1px solid rgba(148,163,184,.22);
+      background:rgba(2,6,23,.55);
+      border-radius:18px;
+      padding:14px;
+    }
+    .kicker{
+      font-size:12px;
+      font-weight:950;
+      color:#bbf7d0;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      opacity:.95;
+    }
+    .big{
+      margin-top:6px;
+      font-size:22px;
+      font-weight:950;
+      line-height:1.15;
+      color:#facc15;
+    }
+    .txt{
+      margin-top:10px;
+      font-size:14px;
+      color:#e5e7eb;
+      line-height:1.7;
+      font-weight:650;
+    }
+    .bul{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      font-size:14px;
+      color:#e5e7eb;
+      font-weight:650;
+      line-height:1.55;
+    }
+    .bul div{
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(148,163,184,.18);
+      background:rgba(15,23,42,.35);
+    }
+    .hi{color:#fde68a;font-weight:950}
+    .panelActions{
+      padding:14px 16px;
+      border-top:1px solid rgba(148,163,184,.22);
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      background:rgba(2,6,23,.55);
+    }
+    .pbtn{
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:950;
+      cursor:pointer;
+      border:1px solid rgba(148,163,184,.22);
+      background:rgba(15,23,42,.55);
+      color:#e5e7eb;
+    }
+    .pbtn.gold{
+      border-color:rgba(250,204,21,.55);
+      background:rgba(250,204,21,.12);
+      color:#fde68a;
+    }
+    .pbtn.green{
+      border-color:rgba(34,197,94,.55);
+      background:rgba(34,197,94,.12);
+      color:#bbf7d0;
+    }
   </style>
 </head>
 
@@ -356,14 +517,16 @@
       <section class="hero">
         <div class="hero-title">Locations direct propriétaire <span>0% commission</span></div>
         <div class="hero-sub">
-          Tu échanges en direct avec le proprio. Paiement direct (Wave/espèces selon le logement).
-          DIGIY ne touche pas l’argent : <b>0% commission</b>.
+          Paiement direct (Wave/espèces selon le logement). DIGIY ne touche pas l’argent : <b>0% commission</b>.
+          <br><br>
+          🌙 <b>NDIMBAL</b> = des <b>nuits offertes</b> (Lun→Jeu) pour te faire rester +1 nuit — et faire vivre le quartier.
         </div>
         <div class="hero-tags">
           <div class="hero-tag"><strong>Direct propriétaire</strong> — pas d’intermédiaire</div>
           <div class="hero-tag">Saly • Dakar • Mbour • Thiès</div>
           <div class="hero-tag">WhatsApp en 1 clic</div>
           <div class="hero-tag"><strong>Live</strong> : dispo du jour</div>
+          <div class="hero-tag"><strong>NDIMBAL</strong> : nuits offertes (Lun-Jeu)</div>
         </div>
       </section>
 
@@ -371,6 +534,9 @@
         <a href="https://beauville.github.io/inscription-digiy/?module=loc" class="cta-btn" target="_blank" rel="noopener noreferrer">
           🏠 Publier mon logement • 0% commission
         </a>
+        <button class="cta-btn nd" type="button" id="btnNdOpenTop">
+          🌙 Comprendre NDIMBAL
+        </button>
         <a href="https://wa.me/221771342889" class="cta-btn secondary" target="_blank" rel="noopener noreferrer">
           📲 Parler à l’équipe DIGIY
         </a>
@@ -398,6 +564,60 @@
     </footer>
   </div>
 
+  <!-- =========================
+       NDIMBAL OVERLAY PAGE
+  ========================== -->
+  <div class="overlay" id="ndOverlay" aria-hidden="true">
+    <div class="panel" role="dialog" aria-modal="true" aria-label="Comprendre NDIMBAL">
+      <div class="panelTop">
+        <div>
+          <div class="panelTitle">🌙 NDIMBAL — le pouvoir des nuits offertes</div>
+          <div class="panelSub">
+            NDIMBAL n’est pas “une commission” ni “un frais”.
+            C’est une stratégie locale : <b>tu restes +1 nuit</b> → tu <b>consommes +1 jour</b> dans le quartier (restos, taxis, marché, plage…).
+            C’est ça les retombées.
+          </div>
+        </div>
+        <button class="panelClose" type="button" id="ndClose">✕ Fermer</button>
+      </div>
+
+      <div class="panelBody">
+        <div class="box">
+          <div class="kicker">OFFRE OFFICIELLE</div>
+          <div class="big">2 nuits payées = 3ᵉ offerte</div>
+          <div class="txt">
+            Valable <span class="hi">du lundi au jeudi</span> (selon disponibilité du logement NDIMBAL).
+            Objectif : pousser les séjours en semaine et faire tourner l’économie du quartier.
+          </div>
+
+          <div class="bul">
+            <div>✅ Tu gagnes <span class="hi">1 nuit</span> → tu restes plus longtemps.</div>
+            <div>✅ Tu dépenses <span class="hi">1 jour de plus</span> dans le coin → le quartier gagne.</div>
+            <div>✅ Le logement gagne en <span class="hi">bouche-à-oreille</span> (la com est foudroyante).</div>
+          </div>
+        </div>
+
+        <div class="box">
+          <div class="kicker">COMMENT REPÉRER ?</div>
+          <div class="txt">
+            Dans la galerie, un logement NDIMBAL porte un badge <span class="hi">🌙 NDIMBAL</span>.
+            Exemple : <span class="hi">CHEZ ASTOU SALY</span>.
+          </div>
+          <div class="bul">
+            <div>1) Tu choisis tes dates.</div>
+            <div>2) Tu écris au proprio via WhatsApp.</div>
+            <div>3) Tu dis : <span class="hi">“Je veux profiter de NDIMBAL”</span>.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panelActions">
+        <button class="pbtn gold" type="button" id="ndClose2">✅ J’ai compris</button>
+        <button class="pbtn green" type="button" id="ndTalk">📲 Parler à DIGIY</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     /* =========================
@@ -411,25 +631,33 @@
     const grid = document.getElementById("grid");
 
     /* =========================
-       CONTACTS OFFICIELS
+       CONTACT OFFICIEL
     ========================= */
     const TEAM_WA = "+221771342889";
 
     /* =========================
-       ASTOU — PHOTO + WHATSAPP FORCÉS
+       NDIMBAL (RÈGLE + LOGEMENT OFFICIEL)
+       -> on déclenche NDIMBAL par TITRE (simple, terrain)
     ========================= */
-    const PHOTO_OVERRIDES_BY_SLUG = {
-      "chez-astou-saly": "https://digiylyfe.com/wp-content/uploads/2025/06/042-BAPTISTE.png"
-    };
-    const WHATSAPP_OVERRIDES_BY_SLUG = {
-      "chez-astou-saly": "+221778765785"
-    };
+    const NDIMBAL_NAME = "CHEZ ASTOU SALY";
+    const NDIMBAL_RULE = "2 nuits payées = 3e offerte (Lun-Jeu)";
+
+    function isNdimbal(row){
+      return (String(row.title || "").toUpperCase().trim() === NDIMBAL_NAME);
+    }
 
     /* =========================
-       DISPONIBILITÉ — VIEW (ROYAL)
-       view: v_loc_pin_occupancy_today(pin_slug, is_occupied_today)
+       ASTOU — FORCÉ DANS LA GALERIE (même si Supabase ne renvoie rien)
     ========================= */
-    const OCCUPANCY_VIEW = "v_loc_pin_occupancy_today";
+    const ASTOU_PIN = {
+      title: "CHEZ ASTOU SALY",
+      slug: "chez-astou-saly",
+      address_label: "Saly",
+      kind: "Location • Direct propriétaire",
+      whatsapp: "+221778765785",
+      cover: "https://digiylyfe.com/wp-content/uploads/2025/06/042-BAPTISTE.png",
+      desc: "Logement partenaire NDIMBAL : nuits offertes en semaine pour prolonger le séjour."
+    };
 
     /* =========================
        PLACEBOTS (garniture)
@@ -460,6 +688,11 @@
         desc:"Les nouveaux logements arrivent. Écris-nous pour être notifié dès qu’un logement est publié."
       }
     ];
+
+    /* =========================
+       DISPONIBILITÉ — VIEW
+    ========================= */
+    const OCCUPANCY_VIEW = "v_loc_pin_occupancy_today";
 
     /* =========================
        HELPERS
@@ -494,7 +727,6 @@
     function mergeNoDup(baseList, fillers, targetCount){
       const merged = [...baseList];
       const seen = new Set(baseList.map(x => String(x.slug || "").toLowerCase()).filter(Boolean));
-
       for (const f of fillers){
         if (merged.length >= targetCount) break;
         const s = String(f.slug || "").toLowerCase();
@@ -505,34 +737,35 @@
       return merged;
     }
 
-    function pickWhatsApp(row){
-      const slug = row.slug || "";
-      const forced = WHATSAPP_OVERRIDES_BY_SLUG[slug];
-      if (forced) return forced;
-
-      const wa = row.whatsapp || row.phone || "";
-      const digits = String(wa).replace(/\D/g, "");
-      if (digits.length >= 9) return wa;
-
-      return TEAM_WA; // jamais de bidon
-    }
-
-    function pickCover(row){
-      const slug = row.slug || "";
-      return (
-        PHOTO_OVERRIDES_BY_SLUG[slug] ||
-        row.cover ||
-        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80"
-      );
-    }
-
     function computeKind(row){
-      // go_pins n'a pas "type", donc simple heuristique propre
       const t = norm(row.title || "");
       if (t.includes("villa")) return "Villa • Direct propriétaire";
       if (t.includes("studio")) return "Studio • Direct propriétaire";
       if (t.includes("appart")) return "Appartement • Direct propriétaire";
       return "Location • Direct propriétaire";
+    }
+
+    function pickWhatsApp(row){
+  const slug = String(row.slug || "").toLowerCase();
+  const title = String(row.title || "").toUpperCase();
+
+  /* 🔒 FORÇAGE ABSOLU ASTOU */
+  if (slug === "chez-astou-saly" || title.includes("CHEZ ASTOU SALY")){
+    return "+221778765785";
+  }
+
+  const wa = row.whatsapp || row.phone || "";
+  const digits = String(wa).replace(/\D/g, "");
+  if (digits.length >= 9) return wa;
+
+  return TEAM_WA;
+}
+
+    function pickCover(row){
+      return (
+        row.cover ||
+        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80"
+      );
     }
 
     function pinLink(slug){
@@ -541,8 +774,35 @@
     }
 
     /* =========================
+       NDIMBAL OVERLAY CONTROL
+    ========================= */
+    const ndOverlay = document.getElementById("ndOverlay");
+    const ndClose = document.getElementById("ndClose");
+    const ndClose2 = document.getElementById("ndClose2");
+    const ndTalk = document.getElementById("ndTalk");
+    const btnNdOpenTop = document.getElementById("btnNdOpenTop");
+
+    function openNdimbal(){
+      ndOverlay.classList.add("show");
+      ndOverlay.setAttribute("aria-hidden","false");
+    }
+    function closeNdimbal(){
+      ndOverlay.classList.remove("show");
+      ndOverlay.setAttribute("aria-hidden","true");
+    }
+
+    btnNdOpenTop.addEventListener("click", openNdimbal);
+    ndClose.addEventListener("click", closeNdimbal);
+    ndClose2.addEventListener("click", closeNdimbal);
+    ndOverlay.addEventListener("click", (e)=>{ if (e.target === ndOverlay) closeNdimbal(); });
+    document.addEventListener("keydown",(e)=>{ if (e.key === "Escape") closeNdimbal(); });
+
+    ndTalk.addEventListener("click", ()=>{
+      openWa(TEAM_WA, `Bonjour DIGIY 👋\nJe veux en savoir plus sur NDIMBAL (${NDIMBAL_RULE}).`);
+    });
+
+    /* =========================
        LOGGING (best-effort)
-       - optionnel, ne bloque jamais
     ========================= */
     async function logReservationIntent(pin){
       try{
@@ -559,14 +819,15 @@
     async function reserveNow(pin){
       const wa = pickWhatsApp(pin);
       const title = pin.title || "ce logement";
-      const msg = `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.`;
+      const nd = isNdimbal(pin);
+      const ndLine = nd
+        ? `\n\n🌙 NDIMBAL : ${NDIMBAL_RULE}\nJe veux en profiter si dispo (Lun-Jeu).`
+        : "";
+      const msg = `Bonjour, je souhaite réserver / avoir des infos pour "${title}" via DIGIY LOC.${ndLine}`;
       await logReservationIntent(pin);
       openWa(wa, msg);
     }
 
-    /* =========================
-       OCCUPANCY MAP (slug -> true/false)
-    ========================= */
     async function fetchOccupancyToday(){
       const { data, error } = await sb
         .from(OCCUPANCY_VIEW)
@@ -593,6 +854,7 @@
       const cover = pickCover(p);
 
       const isOccupied = occMap ? (occMap.get(slug) === true) : false;
+      const nd = isNdimbal(p);
 
       const badges = [];
       badges.push(`<div class="badge">0% com DIGIY</div>`);
@@ -600,14 +862,21 @@
         ? `<div class="badge busy">⛔ OCCUPÉ aujourd’hui</div>`
         : `<div class="badge free">✅ DISPONIBLE</div>`
       );
+      if (nd) badges.push(`<div class="badge gold">🌙 NDIMBAL • Nuits offertes</div>`);
 
-      if (p.partner_url) badges.push(`<div class="badge blue">Lien partenaire</div>`);
-      if (p.featured_rank != null) badges.push(`<div class="badge gold">⭐ Premium</div>`);
-
-      const hasGeo = (p.lat != null && p.lng != null);
-      const mapsUrl = hasGeo
-        ? `https://www.google.com/maps?q=${encodeURIComponent(p.lat + "," + p.lng)}`
-        : "";
+      const ndBox = nd ? `
+        <div class="ndimbalBox">
+          <div class="ndTitle">🌙 Offre NDIMBAL (CHEZ ASTOU)</div>
+          <div class="ndLine"><b>${escapeHtml(NDIMBAL_RULE)}</b></div>
+          <div class="ndSmall">Tu restes +1 nuit → tu consommes +1 jour dans le quartier (retombées énormes).</div>
+        </div>
+      ` : `
+        <div class="ndimbalBox">
+          <div class="ndTitle">🌙 NDIMBAL (infos)</div>
+          <div class="ndLine">Comprendre le rôle de NDIMBAL (nuits offertes + économie quartier).</div>
+          <div class="ndSmall">Clique “🌙 Comprendre NDIMBAL”.</div>
+        </div>
+      `;
 
       return `
         <article class="card">
@@ -624,8 +893,10 @@
 
           <div class="badges">${badges.join("")}</div>
 
+          ${ndBox}
+
           <p class="desc">
-            Contact direct propriétaire. Paiement direct (Wave/espèces selon le logement). 0% commission.
+            ${escapeHtml(p.desc || "Contact direct propriétaire. Paiement direct (Wave/espèces selon le logement). 0% commission.")}
           </p>
 
           <div class="meta">WhatsApp direct • Réponse rapide</div>
@@ -643,20 +914,30 @@
               whatsapp: p.whatsapp || "",
               phone: p.phone || "",
               address_label: city,
-              partner_url: p.partner_url || null,
-              featured_rank: p.featured_rank ?? null,
-              lat: p.lat ?? null,
-              lng: p.lng ?? null,
-              kind: kind
+              cover: cover,
+              kind: kind,
+              desc: p.desc || ""
             }).replace(/</g,"\\u003c")})'>📲 Réserver (WhatsApp)</button>
           </div>
 
           <div class="actions">
-            ${hasGeo
-              ? `<a class="btn btn-ghost" href="${mapsUrl}" target="_blank" rel="noopener noreferrer">🗺️ Voir sur la carte</a>`
-              : `<button class="btn btn-ghost" type="button" onclick="openWa('${escapeJs(TEAM_WA)}','${escapeJs("Bonjour DIGIY, je cherche une location à " + city + ".") }')">🤝 Aide DIGIY</button>`
-            }
-            <button class="btn btn-ghost" type="button" onclick="openWa('${escapeJs(TEAM_WA)}','${escapeJs("Bonjour DIGIY, je cherche une location à " + city + ".") }')">🤝 Aide DIGIY</button>
+            <button class="btn btn-nd" type="button" onclick="openNdimbal()">
+PIN</a>
+            <button class="btn btn-wa" type="button" onclick='reserveNow(${JSON.stringify({
+              slug: slug,
+              title: title,
+              whatsapp: p.whatsapp || "",
+              phone: p.phone || "",
+              address_label: city,
+              cover: cover,
+              kind: kind,
+              desc: p.desc || ""
+            }).replace(/</g,"\\u003c")})'>📲 Réserver (WhatsApp)</button>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-nd" type="button" onclick="openNdimbal()">              🌙 NDIMBAL — Comprendre
+            </button>
           </div>
         </article>
       `;
@@ -697,6 +978,57 @@
       return { ok:true, rows: Array.isArray(data) ? data : [], error:null };
     }
 
+    /* =========================
+       NDIMBAL — MODAL (PAGE EXPLICATIVE)
+       => zéro renvoi externe, c’est ici que ça parle
+    ========================= */
+    function openNdimbal(){
+      const m = document.getElementById("ndModal");
+      if (!m) return;
+      m.classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+    function closeNdimbal(){
+      const m = document.getElementById("ndModal");
+      if (!m) return;
+      m.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+    function ndimbalAsk(){
+      // Ici seulement on propose WA, mais la page explicative est déjà là.
+      const msg =
+        "Bonjour DIGIY 👋\n" +
+        "Je veux profiter de NDIMBAL (nuits offertes) et connaître les logements éligibles.\n" +
+        "Mes dates : ____\n" +
+        "Ma zone : ____\n" +
+        "Mon budget : ____\n" +
+        "Merci 🙏";
+      openWa(TEAM_WA, msg);
+    }
+
+    /* =========================
+       RENDER
+       + garantit qu’Astou existe via PLACEBOT si Supabase ne le renvoie pas
+    ========================= */
+    function ensureAstou(list){
+      const hasAstou = (list || []).some(x => norm(x.title) === norm("CHEZ ASTOU SALY"));
+      if (hasAstou) return list;
+
+      // PLACEBOT ASTOU (visible même si pas encore publié dans Supabase)
+      const astouBot = {
+        title: "CHEZ ASTOU SALY",
+        slug: "chez-astou-saly",
+        address_label: "Saly",
+        kind: "Villa • Direct propriétaire",
+        whatsapp: WHATSAPP_OVERRIDES_BY_SLUG["chez-astou-saly"] || TEAM_WA,
+        cover: PHOTO_OVERRIDES_BY_SLUG["chez-astou-saly"] ||
+          "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1400&q=80",
+        desc: "🌙 NDIMBAL actif ici : 2 nuits payées = 3e offerte (Lun-Jeu)."
+      };
+
+      return [astouBot, ...(list || [])];
+    }
+
     async function render(){
       grid.innerHTML = `<div class="bigmsg">Chargement des logements…</div>`;
 
@@ -715,12 +1047,16 @@
         return;
       }
 
-      const pins = pinsRes.rows.map(p => ({
-        ...p,
-        kind: computeKind(p)
-      }));
+      // Base pins
+      let pins = (pinsRes.rows || []).map(p => ({ ...p, kind: computeKind(p) }));
 
+      // Force Astou présent même si pas encore en DB
+      pins = ensureAstou(pins);
+
+      // Merge placebots (garniture)
       const merged = mergeNoDup(pins, PLACEBOTS, 9);
+
+      // Filtres
       const filtered = applyFilters(merged);
 
       if (!filtered.length){
@@ -735,11 +1071,28 @@
       grid.innerHTML = filtered.map(p => cardTemplate(p, occMap)).join("");
     }
 
+    /* =========================
+       EVENTS
+    ========================= */
     document.getElementById("btnSearch").addEventListener("click", render);
     document.getElementById("btnReset").addEventListener("click", ()=>{
       document.getElementById("q").value = "";
       document.getElementById("kind").value = "";
       render();
+    });
+
+    // Bouton NDIMBAL top
+    const topNd = document.getElementById("btnNdimbalTop");
+    if (topNd){
+      topNd.addEventListener("click",(e)=>{
+        e.preventDefault();
+        openNdimbal();
+      });
+    }
+
+    // Close modal
+    document.addEventListener("keydown",(e)=>{
+      if (e.key === "Escape") closeNdimbal();
     });
 
     ["q"].forEach(id=>{
@@ -750,5 +1103,117 @@
 
     render();
   </script>
+
+  <!-- =========================
+       NDIMBAL MODAL (PAGE EXPLICATIVE IN-APP)
+  ========================== -->
+  <div class="ndModal" id="ndModal" aria-hidden="true">
+    <div class="ndBackdrop" onclick="closeNdimbal()"></div>
+
+    <div class="ndSheet" role="dialog" aria-modal="true" aria-label="NDIMBAL — Nuits offertes">
+      <div class="ndTop">
+        <div class="ndIcon">🌙</div>
+        <div class="ndHead">
+          <div class="ndTitle2">NDIMBAL — Nuits offertes</div>
+          <div class="ndSub2">Moteur d’économie de quartier • pas une commission • pas une taxe</div>
+        </div>
+        <button class="ndClose" type="button" onclick="closeNdimbal()">✕</button>
+      </div>
+
+      <div class="ndBody">
+        <div class="ndCard">
+          <div class="ndCardTitle">✅ La règle (simple)</div>
+          <div class="ndCardLine"><b>2 nuits payées = 3ᵉ offerte</b> (du <b>lundi au jeudi</b>)</div>
+          <div class="ndCardSmall">Objectif : te faire rester 1 nuit de plus → tu consommes 1 jour de plus dans le quartier.</div>
+        </div>
+
+        <div class="ndGrid">
+          <div class="ndCard">
+            <div class="ndCardTitle">💥 Pourquoi c’est puissant ?</div>
+            <div class="ndCardSmall">
+              • Le client reste + longtemps<br>
+              • Resto, marché, taxi, sorties : le quartier gagne<br>
+              • Le logement gagne en recommandations / bouche-à-oreille<br>
+              • La com est simple, WhatsApp-friendly
+            </div>
+          </div>
+
+          <div class="ndCard">
+            <div class="ndCardTitle">🏠 Comment reconnaître un logement NDIMBAL ?</div>
+            <div class="ndCardSmall">
+              Sur la carte logement, tu verras le badge :<br>
+              <b>🌙 NDIMBAL • Nuits offertes</b><br>
+              et le bloc explicatif juste dessous.
+            </div>
+          </div>
+        </div>
+
+        <div class="ndCard ndHighlight">
+          <div class="ndCardTitle">⭐ Exemple terrain</div>
+          <div class="ndCardSmall">
+            Tu viens 2 nuits (Lun-Jeu) → la 3e est offerte.<br>
+            Tu profites du séjour, et tu dépenses une journée de plus dans la zone.<br>
+            <b>Retombées énormes</b> : c’est ça NDIMBAL.
+          </div>
+        </div>
+
+        <div class="ndActions">
+          <button class="ndBtn primary" type="button" onclick="closeNdimbal()">✅ J’ai compris</button>
+          <button class="ndBtn ghost" type="button" onclick="ndimbalAsk()">📲 Demander les logements NDIMBAL</button>
+        </div>
+
+        <div class="ndFoot">
+          DIGIY LOC — NDIMBAL = séjour + long • quartier + vivant ♾️
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* ===== NDIMBAL MODAL premium ===== */
+    .ndModal{position:fixed;inset:0;z-index:9999;display:none}
+    .ndModal.show{display:block}
+    .ndBackdrop{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px)}
+    .ndSheet{
+      position:absolute;left:50%;top:50%;
+      transform:translate(-50%,-50%);
+      width:min(920px,92vw);
+      background:radial-gradient(circle at top left,rgba(250,204,21,.14),rgba(3,7,18,.98));
+      border:1px solid rgba(148,163,184,.35);
+      border-radius:22px;
+      box-shadow:0 25px 70px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .ndTop{display:flex;align-items:center;gap:12px;padding:14px 14px;border-bottom:1px solid rgba(148,163,184,.22)}
+    .ndIcon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#facc15,#f97316);color:#111;font-weight:900;font-size:22px}
+    .ndHead{flex:1;min-width:0}
+    .ndTitle2{font-weight:950;font-size:18px;color:#fde68a}
+    .ndSub2{font-weight:750;font-size:13px;color:#e5e7eb;opacity:.92}
+    .ndClose{border:none;background:rgba(15,23,42,.65);color:#e5e7eb;border:1px solid rgba(148,163,184,.3);
+      border-radius:12px;padding:8px 10px;font-weight:950;cursor:pointer}
+    .ndBody{padding:14px}
+    .ndGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+    @media(max-width:820px){.ndGrid{grid-template-columns:1fr}}
+    .ndCard{
+      background:rgba(2,6,23,.68);
+      border:1px solid rgba(148,163,184,.22);
+      border-radius:16px;
+      padding:12px;
+    }
+    .ndHighlight{border-color:rgba(250,204,21,.38);background:rgba(250,204,21,.06)}
+    .ndCardTitle{font-weight:950;color:#bbf7d0;margin-bottom:6px}
+    .ndCardLine{font-weight:900;font-size:15px;color:#fff;line-height:1.4}
+    .ndCardSmall{font-weight:650;font-size:13px;color:#e5e7eb;line-height:1.6;opacity:.95}
+    .ndActions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px}
+    .ndBtn{
+      border-radius:999px;padding:11px 14px;font-weight:950;cursor:pointer;border:1px solid rgba(148,163,184,.25);
+      background:rgba(15,23,42,.6);color:#e5e7eb
+    }
+    .ndBtn.primary{background:linear-gradient(135deg,#facc15,#f97316);border-color:rgba(250,204,21,.5);color:#111}
+    .ndBtn.ghost{background:rgba(22,163,74,.16);border-color:rgba(34,197,94,.55);color:#bbf7d0}
+    .ndFoot{margin-top:10px;font-size:12px;color:#cbd5f5;font-weight:800;opacity:.9}
+  </style>
+
 </body>
 </html>
